@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📤 Mô Tả: Trả Thiết Bị (sl: 1 → 0)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #f5576c;
+        }
+        
+        .section h2 {
+            color: #f5576c;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h3 {
+            color: #d32f2f;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-block .keyword { color: #c678dd; }
+        .code-block .string { color: #98c379; }
+        .code-block .comment { color: #5c6370; font-style: italic; }
+        .code-block .function { color: #61afef; }
+        .code-block .variable { color: #e06c75; }
+        
+        .alert {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #0c5460;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #856404;
+            color: #856404;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-color: #155724;
+            color: #155724;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table th {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            background: white;
+        }
+        
+        table tr:hover td {
+            background: #f1f3f5;
+        }
+        
+        .flow-step {
+            background: white;
+            border: 2px solid #f5576c;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .flow-step::before {
+            content: "↓";
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #f5576c;
+        }
+        
+        .flow-step:last-child::before {
+            display: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        
+        .badge-danger { background: #dc3545; color: white; }
+        .badge-success { background: #28a745; color: white; }
+        .badge-warning { background: #ffc107; color: #212529; }
+        .badge-info { background: #17a2b8; color: white; }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .example-box {
+            background: #ffe8e8;
+            border: 2px solid #f5576c;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid;
+        }
+        
+        .before {
+            background: #fff5f5;
+            border-color: #dc3545;
+        }
+        
+        .after {
+            background: #f5fff5;
+            border-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📤 Mô Tả: Trả Thiết Bị (sl: 1 → 0)</h1>
+            <p>Khi nhân viên trả thiết bị, hệ thống cập nhật record hiện tại và XÓA chứng từ kỳ sau</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">File: classes/bhld_ctctu.php | Function: Row_Updating()</p>
+        </div>
+        
+        <div class="content">
+            <!-- TỔNG QUAN -->
+            <div class="section">
+                <h2><span class="icon">🎯</span>Tổng Quan</h2>
+                
+                <div class="alert alert-info">
+                    <h3 style="margin-top: 0;">📌 Khái niệm "Trả thiết bị"</h3>
+                    <p><strong>Định nghĩa:</strong> Khi nhân viên trả thiết bị trước hạn hoặc không cần dùng nữa, admin sửa sl từ 1 (đã nhận) → 0 (chưa nhận/đã trả).</p>
+                    <br>
+                    <p><strong>Hệ thống sẽ:</strong></p>
+                    <ul style="margin: 15px 0 0 30px;">
+                        <li>Reset ngày nhận về giá trị mặc định (1911-11-11)</li>
+                        <li>XÓA chứng từ kỳ sau (vì không cần tạo kỳ tiếp theo nữa)</li>
+                    </ul>
+                </div>
+                
+                <h3>Ví dụ minh họa:</h3>
+                <div class="example-box">
+                    <p><strong>Tháng 11/2024:</strong> Nhân viên 17542 đã nhận "Khẩu trang N95" (định mức 3 tháng)</p>
+                    <p style="margin-top: 10px;">→ Hệ thống đã tạo:</p>
+                    <ul style="margin: 10px 0 0 30px;">
+                        <li><strong>Kỳ hiện tại (11/2024):</strong> sl=1, ngnhan='2024-11-15', ngnhantt='2025-02-15'</li>
+                        <li><strong>Kỳ sau (02/2025):</strong> sl=0, ngnhan='1911-11-11' (chờ nhận)</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Nhân viên trả thiết bị ngày 01/12/2024:</strong></p>
+                    <p style="margin-top: 5px;">Admin sửa sl: 1 → 0</p>
+                    <ul style="margin: 10px 0 0 30px;">
+                        <li>✅ Reset kỳ hiện tại: sl=0, ngnhan='1911-11-11', ngnhantt='1911-11-11'</li>
+                        <li>❌ Xóa chứng từ kỳ sau (02/2025) - không cần nữa</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- LUỒNG XỬ LÝ -->
+            <div class="section">
+                <h2><span class="icon">🔄</span>Luồng Xử Lý Chi Tiết</h2>
+                
+                <div class="flow-step">
+                    <h3 style="margin-top: 0;">Bước 1: User cập nhật sl từ 1 → 0</h3>
+                    <p>Admin mở trang chi tiết chứng từ, sửa số lượng từ 1 (đã nhận) → 0 (trả/chưa nhận)</p>
+                    <table>
+                        <tr>
+                            <th>Field</th>
+                            <th>Giá trị cũ</th>
+                            <th>Giá trị mới</th>
+                        </tr>
+                        <tr>
+                            <td>sl</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>ngnhan</td>
+                            <td>'2024-11-15'</td>
+                            <td>(sẽ được reset)</td>
+                        </tr>
+                        <tr>
+                            <td>ngnhantt</td>
+                            <td>'2025-02-15'</td>
+                            <td>(sẽ được reset)</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="flow-step">
+                    <h3 style="margin-top: 0;">Bước 2: Trigger Row_Updating()</h3>
+                    <p>PHPMaker tự động gọi function <code>Row_Updating($rsold, &$rsnew)</code></p>
+                    <div class="code-block">
+<span class="function">Row_Updating</span>(<span class="variable">$rsold</span>, &<span class="variable">$rsnew</span>) {
+    <span class="comment">// $rsold: Dữ liệu cũ (sl=1, ngnhan='2024-11-15', ...)</span>
+    <span class="comment">// $rsnew: Dữ liệu mới (sl=0)</span>
+}
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <h3 style="margin-top: 0;">Bước 3: Kiểm tra điều kiện</h3>
+                    <div class="code-block">
+<span class="keyword">if</span>(<span class="variable">$rsnew</span>[<span class="string">'sl'</span>]==<span class="number">0</span> && <span class="variable">$rsold</span>[<span class="string">'sl'</span>]!=<span class="number">0</span>) {
+    <span class="comment">// Trường hợp: sl thay đổi từ 1 (hoặc >0) → 0</span>
+    <span class="comment">// → Nhân viên TRẢ thiết bị</span>
+}
+                    </div>
+                    <table>
+                        <tr>
+                            <th>Điều kiện</th>
+                            <th>Ý nghĩa</th>
+                        </tr>
+                        <tr>
+                            <td><code>$rsnew['sl'] == 0</code></td>
+                            <td>Giá trị mới là 0 (không còn giữ thiết bị)</td>
+                        </tr>
+                        <tr>
+                            <td><code>$rsold['sl'] != 0</code></td>
+                            <td>Giá trị cũ khác 0 (trước đó đã nhận)</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="flow-step">
+                    <h3 style="margin-top: 0;">Bước 4: Lấy thông tin master record</h3>
+                    <div class="code-block">
+<span class="variable">$rs</span> = <span class="function">ExecuteRow</span>(<span class="string">"SELECT manv, mact, madm, mapb, ghichu, ngct, ...
+       FROM bhld_ctu 
+       WHERE mact='"</span>.<span class="variable">$rsold</span>[<span class="string">'mact'</span>].<span class="string">"'"</span>);
+                    </div>
+                    <p>Lấy thông tin chứng từ cha để biết:</p>
+                    <ul style="margin-left: 30px;">
+                        <li><strong>manv:</strong> Mã nhân viên</li>
+                        <li><strong>mapb:</strong> Mã phòng ban</li>
+                        <li><strong>ngct:</strong> Ngày chứng từ</li>
+                        <li><strong>dmtg:</strong> Định mức thời gian (từ $rsold)</li>
+                    </ul>
+                </div>
+                
+                <div class="flow-step">
+                    <h3 style="margin-top: 0;">Bước 5: Reset ngày nhận về mặc định</h3>
+                    <div class="code-block">
+<span class="variable">$rsnew</span>[<span class="string">'ngnhan'</span>] = <span class="string">'1911-11-11'</span>;
+<span class="variable">$rsnew</span>[<span class="string">'ngnhantt'</span>] = <span class="string">'1911-11-11'</span>;
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Lưu ý:</strong> Ngày '1911-11-11' là giá trị mặc định biểu thị "chưa nhận" hoặc "đã trả"
+                    </div>
+                    <table>
+                        <tr>
+                            <th>Field</th>
+                            <th>Giá trị cũ</th>
+                            <th>Giá trị mới</th>
+                            <th>Ý nghĩa</th>
+                        </tr>
+                        <tr>
+                            <td><strong>ngnhan</strong></td>
+                            <td>'2024-11-15'</td>
+                            <td class="highlight">'1911-11-11'</td>
+                            <td>Reset về chưa nhận</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ngnhantt</strong></td>
+                            <td>'2025-02-15'</td>
+                            <td class="highlight">'1911-11-11'</td>
+                            <td>Reset về chưa có hạn trả</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="flow-step">
+                    <h3 style="margin-top: 0;">Bước 6: Format mã nhân viên</h3>
+                    <div class="code-block">
+<span class="comment">// Format manv đúng: chỉ thêm số 0 khi là số thuần và có 4 chữ số</span>
+<span class="variable">$manv_formatted</span> = <span class="variable">$rs</span>[<span class="string">'manv'</span>];
+<span class="keyword">if</span>(<span class="function">is_numeric</span>(<span class="variable">$rs</span>[<span class="string">'manv'</span>]) && <span class="function">strlen</span>(<span class="variable">$rs</span>[<span class="string">'manv'</span>])==<span class="number">4</span>) {
+    <span class="variable">$manv_formatted</span> = <span class="string">'0'</span>.<span class="variable">$rs</span>[<span class="string">'manv'</span>];  <span class="comment">// VD: '1234' → '01234'</span>
+}
+<span class="comment">// Với '17542' (5 chữ số) hoặc '08-DVL' (có ký tự) → giữ nguyên</span>
+                    </div>
+                    <p>Cần format đúng mã nhân viên để tạo mact kỳ sau chính xác cho câu DELETE</p>
+                </div>
+                
+                <div class="flow-step">
+                    <h3 style="margin-top: 0;">Bước 7: XÓA chứng từ kỳ sau</h3>
+                    <div class="code-block">
+<span class="comment">// Tính mact của chứng từ kỳ sau</span>
+<span class="variable">$mact_ky_sau</span> = <span class="function">CONCAT</span>(
+    <span class="function">date_format</span>(<span class="function">DATE_ADD</span>(<span class="variable">$rs</span>[<span class="string">'ngct'</span>], <span class="keyword">INTERVAL</span> <span class="variable">$rsold</span>[<span class="string">'dmtg'</span>] <span class="keyword">MONTH</span>), <span class="string">'%Y-%m'</span>),
+    <span class="string">'-'</span>,
+    <span class="variable">$rs</span>[<span class="string">'mapb'</span>],
+    <span class="string">'-'</span>,
+    <span class="variable">$manv_formatted</span>
+);
+
+<span class="comment">// DELETE detail record của kỳ sau</span>
+<span class="variable">$sql</span> = <span class="string">"DELETE FROM `bhld_ctctu` 
+       WHERE mact = '"</span>.<span class="variable">$mact_ky_sau</span>.<span class="string">"'
+       AND mavt = "</span>.<span class="variable">$rsold</span>[<span class="string">'mavt'</span>];
+
+<span class="function">Execute</span>(<span class="variable">$sql</span>);
+                    </div>
+                    
+                    <h4>Giải thích:</h4>
+                    <table>
+                        <tr>
+                            <th>Thành phần</th>
+                            <th>Công thức</th>
+                            <th>Ví dụ</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Năm-Tháng kỳ sau</strong></td>
+                            <td>date_format(DATE_ADD('2024-11-15', 3 MONTH), '%Y-%m')</td>
+                            <td>'2025-02'</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mã phòng ban</strong></td>
+                            <td>$rs['mapb']</td>
+                            <td>'PB01'</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mã NV format</strong></td>
+                            <td>$manv_formatted</td>
+                            <td>'17542'</td>
+                        </tr>
+                        <tr>
+                            <td><strong>mact kỳ sau</strong></td>
+                            <td>CONCAT(...)</td>
+                            <td><span class="badge badge-danger">2025-02-PB01-17542</span></td>
+                        </tr>
+                    </table>
+                    
+                    <div class="alert alert-info" style="margin-top: 20px;">
+                        <strong>💡 Tại sao chỉ XÓA detail (bhld_ctctu) mà không xóa master (bhld_ctu)?</strong>
+                        <br><br>
+                        <p>Vì chứng từ master (bhld_ctu) có thể chứa nhiều vật tư khác nhau. Chỉ xóa vật tư cụ thể (mavt) mà nhân viên trả, không ảnh hưởng đến các vật tư khác.</p>
+                        <br>
+                        <p><strong>Ví dụ:</strong> Chứng từ 2025-02-PB01-17542 có 3 vật tư:</p>
+                        <ul style="margin: 10px 0 0 30px;">
+                            <li>Khẩu trang N95 (mavt=101) - Nhân viên TRẢ</li>
+                            <li>Găng tay (mavt=102) - Vẫn giữ</li>
+                            <li>Áo bảo hộ (mavt=103) - Vẫn giữ</li>
+                        </ul>
+                        <p style="margin-top: 10px;">→ Chỉ DELETE record với mavt=101, giữ lại 102 và 103</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VÍ DỤ CỤ THỂ -->
+            <div class="section">
+                <h2><span class="icon">💡</span>Ví Dụ Cụ Thể</h2>
+                
+                <h3>Tình huống: Nhân viên 17542 trả Khẩu trang N95</h3>
+                
+                <h4>📊 Dữ liệu TRƯỚC khi trả (sl: 1):</h4>
+                
+                <h5>Bảng bhld_ctu (Master) - Có 2 kỳ:</h5>
+                <table>
+                    <tr>
+                        <th>mact</th>
+                        <th>manv</th>
+                        <th>ngct</th>
+                        <th>mapb</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                    <tr style="background: #fff3cd;">
+                        <td>2024-11-PB01-17542</td>
+                        <td>17542</td>
+                        <td>2024-11-15</td>
+                        <td>PB01</td>
+                        <td><span class="badge badge-warning">Kỳ hiện tại</span></td>
+                    </tr>
+                    <tr style="background: #d1ecf1;">
+                        <td>2025-02-PB01-17542</td>
+                        <td>17542</td>
+                        <td>2025-02-15</td>
+                        <td>PB01</td>
+                        <td><span class="badge badge-info">Kỳ sau (sẽ bị xóa)</span></td>
+                    </tr>
+                </table>
+                
+                <h5>Bảng bhld_ctctu (Detail) - Có 2 kỳ:</h5>
+                <table>
+                    <tr>
+                        <th>mact</th>
+                        <th>mavt</th>
+                        <th>sl</th>
+                        <th>ngnhan</th>
+                        <th>ngnhantt</th>
+                        <th>dmtg</th>
+                    </tr>
+                    <tr style="background: #fff3cd;">
+                        <td>2024-11-PB01-17542</td>
+                        <td>101</td>
+                        <td class="highlight">1</td>
+                        <td>2024-11-15</td>
+                        <td>2025-02-15</td>
+                        <td>3</td>
+                    </tr>
+                    <tr style="background: #d1ecf1;">
+                        <td>2025-02-PB01-17542</td>
+                        <td>101</td>
+                        <td>0</td>
+                        <td>1911-11-11</td>
+                        <td>1911-11-11</td>
+                        <td>3</td>
+                    </tr>
+                </table>
+                
+                <h4 style="margin-top: 30px;">📊 Dữ liệu SAU khi trả (sl: 1 → 0):</h4>
+                
+                <h5>Bảng bhld_ctu (Master) - GIỮ NGUYÊN:</h5>
+                <table>
+                    <tr>
+                        <th>mact</th>
+                        <th>manv</th>
+                        <th>ngct</th>
+                        <th>mapb</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                    <tr>
+                        <td>2024-11-PB01-17542</td>
+                        <td>17542</td>
+                        <td>2024-11-15</td>
+                        <td>PB01</td>
+                        <td><span class="badge badge-success">Giữ nguyên</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-02-PB01-17542</td>
+                        <td>17542</td>
+                        <td>2025-02-15</td>
+                        <td>PB01</td>
+                        <td><span class="badge badge-success">Giữ nguyên (có thể có vật tư khác)</span></td>
+                    </tr>
+                </table>
+                
+                <h5>Bảng bhld_ctctu (Detail) - CẬP NHẬT và XÓA:</h5>
+                <table>
+                    <tr>
+                        <th>mact</th>
+                        <th>mavt</th>
+                        <th>sl</th>
+                        <th>ngnhan</th>
+                        <th>ngnhantt</th>
+                        <th>dmtg</th>
+                        <th>Thay đổi</th>
+                    </tr>
+                    <tr style="background: #d4edda;">
+                        <td>2024-11-PB01-17542</td>
+                        <td>101</td>
+                        <td><strong>0</strong></td>
+                        <td><strong>1911-11-11</strong></td>
+                        <td><strong>1911-11-11</strong></td>
+                        <td>3</td>
+                        <td><span class="badge badge-success">✓ CẬP NHẬT</span></td>
+                    </tr>
+                    <tr style="background: #f8d7da;">
+                        <td colspan="7" style="text-align: center;">
+                            <strong>❌ RECORD ĐÃ BỊ XÓA</strong><br>
+                            <small>(2025-02-PB01-17542, mavt=101)</small>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- SO SÁNH 0→1 vs 1→0 -->
+            <div class="section">
+                <h2><span class="icon">⚖️</span>So Sánh: Nhận (0→1) vs Trả (1→0)</h2>
+                
+                <div class="comparison">
+                    <div class="comparison-item before">
+                        <h3>📥 Nhận Thiết Bị (0→1)</h3>
+                        <h4>Hành động:</h4>
+                        <ul>
+                            <li>✅ Cập nhật record hiện tại:
+                                <ul>
+                                    <li>sl = 1</li>
+                                    <li>ngnhan = ngày hiện tại</li>
+                                    <li>ngnhantt = ngnhan + dmtg</li>
+                                </ul>
+                            </li>
+                            <li>✅ TẠO chứng từ kỳ sau (master + detail)</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 20px;">Mục đích:</h4>
+                        <p>Chuẩn bị sẵn chứng từ cho kỳ trả/gia hạn</p>
+                    </div>
+                    
+                    <div class="comparison-item after">
+                        <h3>📤 Trả Thiết Bị (1→0)</h3>
+                        <h4>Hành động:</h4>
+                        <ul>
+                            <li>✅ Cập nhật record hiện tại:
+                                <ul>
+                                    <li>sl = 0</li>
+                                    <li>ngnhan = '1911-11-11'</li>
+                                    <li>ngnhantt = '1911-11-11'</li>
+                                </ul>
+                            </li>
+                            <li>❌ XÓA chứng từ kỳ sau (detail)</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 20px;">Mục đích:</h4>
+                        <p>Hủy bỏ kỳ sau vì không cần nữa</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CODE THỰC TẾ -->
+            <div class="section">
+                <h2><span class="icon">💻</span>Code Thực Tế</h2>
+                
+                <h3>File: classes/bhld_ctctu.php - Row_Updating() (Line ~1151-1167)</h3>
+                <div class="code-block">
+<span class="keyword">if</span>(<span class="variable">$rsnew</span>[<span class="string">'sl'</span>]==<span class="number">0</span> && <span class="variable">$rsold</span>[<span class="string">'sl'</span>]!=<span class="number">0</span>) {  <span class="comment">// Trường hợp sửa từ 1 → 0</span>
+    
+    <span class="comment">// 1. Reset ngày nhận về giá trị mặc định</span>
+    <span class="variable">$rsnew</span>[<span class="string">'ngnhan'</span>] = <span class="string">'1911-11-11'</span>;
+    <span class="variable">$rsnew</span>[<span class="string">'ngnhantt'</span>] = <span class="string">'1911-11-11'</span>;
+    
+    <span class="comment">// 2. Format mã nhân viên đúng (chỉ thêm 0 nếu là số thuần 4 chữ số)</span>
+    <span class="variable">$manv_formatted</span> = <span class="variable">$rs</span>[<span class="string">'manv'</span>];
+    <span class="keyword">if</span>(<span class="function">is_numeric</span>(<span class="variable">$rs</span>[<span class="string">'manv'</span>]) && <span class="function">strlen</span>(<span class="variable">$rs</span>[<span class="string">'manv'</span>])==<span class="number">4</span>) {
+        <span class="variable">$manv_formatted</span> = <span class="string">'0'</span>.<span class="variable">$rs</span>[<span class="string">'manv'</span>];
+    }
+    
+    <span class="comment">// 3. XÓA detail record của chứng từ kỳ sau</span>
+    <span class="variable">$sql</span> = <span class="string">"DELETE FROM `bhld_ctctu` 
+           WHERE mact = CONCAT(
+               date_format(DATE_ADD('"</span>.<span class="variable">$rs</span>[<span class="string">'ngct'</span>].<span class="string">"', INTERVAL "</span>.<span class="variable">$rsold</span>[<span class="string">'dmtg'</span>].<span class="string">" MONTH), '%Y-%m'),
+               '-', '"</span>.<span class="variable">$rs</span>[<span class="string">'mapb'</span>].<span class="string">"',
+               '-', '"</span>.<span class="variable">$manv_formatted</span>.<span class="string">"'
+           )
+           AND mavt = "</span>.<span class="variable">$rsold</span>[<span class="string">'mavt'</span>];
+    
+    <span class="function">Execute</span>(<span class="variable">$sql</span>);
+}
+                </div>
+            </div>
+
+            <!-- LƯU Ý -->
+            <div class="section">
+                <h2><span class="icon">⚠️</span>Lưu Ý Quan Trọng</h2>
+                
+                <div class="alert alert-warning">
+                    <h3 style="margin-top: 0;">1. Không xóa master record</h3>
+                    <p>Chỉ xóa detail record (bhld_ctctu) vì:</p>
+                    <ul style="margin: 10px 0 0 30px;">
+                        <li>Master có thể chứa nhiều vật tư khác</li>
+                        <li>Tránh ảnh hưởng đến các vật tư khác của cùng nhân viên</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h3 style="margin-top: 0;">2. Format mã nhân viên chính xác</h3>
+                    <p>Cần format đúng mã nhân viên để DELETE đúng record:</p>
+                    <ul style="margin: 10px 0 0 30px;">
+                        <li>Mã số 4 chữ số: '1234' → '01234'</li>
+                        <li>Mã số 5 chữ số: '17542' → '17542'</li>
+                        <li>Mã có ký tự: '08-DVL' → '08-DVL'</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-info">
+                    <h3 style="margin-top: 0;">3. Tại sao dùng '1911-11-11'?</h3>
+                    <p>Đây là giá trị "magic value" biểu thị trạng thái "chưa nhận" hoặc "không xác định":</p>
+                    <ul style="margin: 10px 0 0 30px;">
+                        <li>Dễ nhận biết trong báo cáo (năm 1911 rất cũ)</li>
+                        <li>Không bị nhầm với ngày thực tế</li>
+                        <li>Có thể dùng để filter: WHERE ngnhan != '1911-11-11'</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TÓM TẮT -->
+            <div class="section">
+                <h2><span class="icon">📝</span>Tóm Tắt</h2>
+                
+                <div class="alert alert-success">
+                    <h3 style="margin-top: 0;">✅ Quá trình trả thiết bị (sl: 1→0):</h3>
+                    <ol style="margin: 15px 0 0 30px;">
+                        <li><strong>Kiểm tra điều kiện:</strong> $rsnew['sl']==0 && $rsold['sl']!=0</li>
+                        <li><strong>Reset ngày:</strong> ngnhan và ngnhantt về '1911-11-11'</li>
+                        <li><strong>Format mã NV:</strong> Thêm số 0 nếu là số thuần 4 chữ số</li>
+                        <li><strong>Tính mact kỳ sau:</strong> Năm-Tháng + dmtg + mapb + manv</li>
+                        <li><strong>XÓA detail:</strong> DELETE record kỳ sau với mact và mavt cụ thể</li>
+                    </ol>
+                </div>
+                
+                <h3>Files liên quan:</h3>
+                <ul style="margin-left: 30px;">
+                    <li><strong>classes/bhld_ctctu.php</strong> - Row_Updating() (Line ~1151-1167)</li>
+                    <li><strong>Bảng bhld_ctu</strong> - Master table (không bị xóa)</li>
+                    <li><strong>Bảng bhld_ctctu</strong> - Detail table (xóa record kỳ sau)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

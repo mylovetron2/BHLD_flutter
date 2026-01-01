@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../allocation/allocation_screen.dart';
-import '../certificate/certificate_list_screen.dart';
+import '../certificate/certificate_unified_screen.dart';
 import '../employee/employee_list_screen.dart';
 import '../scan/scan_screen.dart';
 
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const HomeTabScreen(),
     const ScanScreen(),
-    const CertificateListScreen(),
+    const CertificateUnifiedScreen(),
     const AllocationScreen(),
   ];
 

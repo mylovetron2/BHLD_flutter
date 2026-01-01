@@ -7,8 +7,13 @@ import '../../providers/certificate_provider.dart';
 
 class CertificateDetailScreen extends StatefulWidget {
   final CertificateModel certificate;
+  final DateTime? filterToDate;
 
-  const CertificateDetailScreen({super.key, required this.certificate});
+  const CertificateDetailScreen({
+    super.key,
+    required this.certificate,
+    this.filterToDate,
+  });
 
   @override
   State<CertificateDetailScreen> createState() =>
@@ -16,6 +21,8 @@ class CertificateDetailScreen extends StatefulWidget {
 }
 
 class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
+  final Set<int> _selectedEquipment = {};
+
   @override
   void initState() {
     super.initState();
@@ -31,9 +38,10 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
   }
 
   Future<void> _showAllocateDialog(int mavt, String tenvt) async {
-    final dateController = TextEditingController(
-      text: DateFormat('yyyy-MM-dd').format(DateTime.now()),
-    );
+    final defaultDate = widget.filterToDate != null
+        ? DateFormat('yyyy-MM-dd').format(widget.filterToDate!)
+        : widget.certificate.ngct;
+    final dateController = TextEditingController(text: defaultDate);
 
     final result = await showDialog<bool>(
       context: context,
@@ -51,9 +59,12 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
               ),
               readOnly: true,
               onTap: () async {
+                final initialDate =
+                    widget.filterToDate ??
+                    DateTime.parse(widget.certificate.ngct);
                 final date = await showDatePicker(
                   context: context,
-                  initialDate: DateTime.now(),
+                  initialDate: initialDate,
                   firstDate: DateTime(2020),
                   lastDate: DateTime(2030),
                 );
@@ -78,12 +89,36 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
     );
 
     if (result == true && mounted) {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Đang cấp phát...'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
       final provider = context.read<CertificateProvider>();
       final success = await provider.allocateEquipment(
         mact: widget.certificate.mact,
         mavt: mavt,
         ngnhan: dateController.text,
       );
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -94,6 +129,23 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
             backgroundColor: success ? Colors.green : Colors.red,
           ),
         );
+
+        // Show error if any
+        if (!success && provider.error != null) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Lỗi'),
+              content: Text(provider.error ?? 'Có lỗi xảy ra'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Đóng'),
+                ),
+              ],
+            ),
+          );
+        }
       }
     }
 
@@ -121,11 +173,35 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
     );
 
     if (result == true && mounted) {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Đang thu hồi...'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
       final provider = context.read<CertificateProvider>();
       final success = await provider.deallocateEquipment(
         mact: widget.certificate.mact,
         mavt: mavt,
       );
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -134,16 +210,277 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
             backgroundColor: success ? Colors.green : Colors.red,
           ),
         );
+
+        // Show error if any
+        if (!success && provider.error != null) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Lỗi'),
+              content: Text(provider.error ?? 'Có lỗi xảy ra'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Đóng'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _showBulkAllocateDialog() async {
+    final provider = context.read<CertificateProvider>();
+    final selectedDetails = provider.certificateDetails
+        .where((detail) => _selectedEquipment.contains(detail.mavt))
+        .toList();
+
+    final defaultDate = widget.filterToDate != null
+        ? DateFormat('yyyy-MM-dd').format(widget.filterToDate!)
+        : widget.certificate.ngct;
+    final dateController = TextEditingController(text: defaultDate);
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Cấp phát ${selectedDetails.length} thiết bị'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Danh sách thiết bị:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              constraints: const BoxConstraints(maxHeight: 200),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: selectedDetails.map((detail) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.check_circle,
+                            size: 16,
+                            color: Colors.green,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              detail.tenvt ?? 'Thiết bị ${detail.mavt}',
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            const Divider(height: 24),
+            TextField(
+              controller: dateController,
+              decoration: const InputDecoration(
+                labelText: 'Ngày nhận (chung)',
+                hintText: 'yyyy-MM-dd',
+                prefixIcon: Icon(Icons.calendar_today),
+              ),
+              readOnly: true,
+              onTap: () async {
+                final initialDate =
+                    widget.filterToDate ??
+                    DateTime.parse(widget.certificate.ngct);
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: initialDate,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2030),
+                );
+                if (date != null) {
+                  dateController.text = DateFormat('yyyy-MM-dd').format(date);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Xác nhận'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true && mounted) {
+      // Show progress dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: const Text('Đang cấp phát...'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text('0 / ${selectedDetails.length}'),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      int successCount = 0;
+      int failCount = 0;
+      final failedItems = <String>[];
+
+      for (int i = 0; i < selectedDetails.length; i++) {
+        final detail = selectedDetails[i];
+        final success = await provider.allocateEquipment(
+          mact: widget.certificate.mact,
+          mavt: detail.mavt,
+          ngnhan: dateController.text,
+        );
+
+        if (success) {
+          successCount++;
+        } else {
+          failCount++;
+          failedItems.add(detail.tenvt ?? 'Thiết bị ${detail.mavt}');
+        }
+
+        // Update progress
+        if (mounted && i < selectedDetails.length - 1) {
+          Navigator.pop(context); // Close old dialog
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => PopScope(
+              canPop: false,
+              child: AlertDialog(
+                title: const Text('Đang cấp phát...'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text('${i + 1} / ${selectedDetails.length}'),
+                    const SizedBox(height: 8),
+                    LinearProgressIndicator(
+                      value: (i + 1) / selectedDetails.length,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      }
+
+      // Close progress dialog
+      if (mounted) Navigator.pop(context);
+
+      // Show result dialog
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(
+                  failCount == 0 ? Icons.check_circle : Icons.warning,
+                  color: failCount == 0 ? Colors.green : Colors.orange,
+                ),
+                const SizedBox(width: 8),
+                const Text('Kết quả cấp phát'),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('✅ Thành công: $successCount thiết bị'),
+                if (failCount > 0) ...[
+                  const SizedBox(height: 8),
+                  Text('❌ Thất bại: $failCount thiết bị'),
+                  if (failedItems.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Chi tiết lỗi:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    ...failedItems.map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.only(left: 16, top: 4),
+                        child: Text('• $item'),
+                      ),
+                    ),
+                  ],
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Đóng'),
+              ),
+            ],
+          ),
+        );
+
+        // Clear selection
+        setState(() {
+          _selectedEquipment.clear();
+        });
+
+        // Reload details
+        _loadDetails();
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<CertificateProvider>();
+    final unallocatedCount = provider.certificateDetails
+        .where((detail) => detail.sl == 0)
+        .length;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chi tiết chứng từ'),
+        title: _selectedEquipment.isNotEmpty
+            ? Text('${_selectedEquipment.length} thiết bị đã chọn')
+            : const Text('Chi tiết chứng từ'),
         actions: [
+          if (_selectedEquipment.isNotEmpty && unallocatedCount > 0)
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  // Select all unallocated equipment
+                  _selectedEquipment.clear();
+                  for (var detail in provider.certificateDetails) {
+                    if (detail.sl == 0) {
+                      _selectedEquipment.add(detail.mavt);
+                    }
+                  }
+                });
+              },
+              child: const Text('Chọn tất cả'),
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadDetails,
@@ -151,6 +488,13 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
           ),
         ],
       ),
+      floatingActionButton: _selectedEquipment.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: _showBulkAllocateDialog,
+              icon: const Icon(Icons.add_circle),
+              label: Text('Cấp phát ${_selectedEquipment.length} thiết bị'),
+            )
+          : null,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,7 +536,7 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
                       value:
                           widget.certificate.tenphongban ??
                           widget.certificate.mapb ??
-                          '',
+                          'Chưa có thông tin',
                     ),
                     _InfoRow(
                       icon: Icons.calendar_today,
@@ -291,9 +635,12 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
                   itemBuilder: (context, index) {
                     final detail = provider.certificateDetails[index];
                     final isAllocated = detail.sl == 1;
+                    final isSelected = _selectedEquipment.contains(detail.mavt);
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
+                      elevation: isSelected ? 4 : 1,
+                      color: isSelected ? Colors.blue.shade50 : null,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -301,6 +648,24 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
                           children: [
                             Row(
                               children: [
+                                if (!isAllocated)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 12),
+                                    child: Checkbox(
+                                      value: isSelected,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value == true) {
+                                            _selectedEquipment.add(detail.mavt);
+                                          } else {
+                                            _selectedEquipment.remove(
+                                              detail.mavt,
+                                            );
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ),
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(

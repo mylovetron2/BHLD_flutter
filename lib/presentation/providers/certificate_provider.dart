@@ -9,13 +9,25 @@ class CertificateProvider with ChangeNotifier {
 
   List<CertificateModel> _certificates = [];
   CertificateModel? _selectedCertificate;
-  List<CertificateDetailModel> _certificateDetails = [];
+  Map<String, List<CertificateDetailModel>> _certificateDetailsMap = {};
   bool _isLoading = false;
   String? _error;
 
   List<CertificateModel> get certificates => _certificates;
   CertificateModel? get selectedCertificate => _selectedCertificate;
-  List<CertificateDetailModel> get certificateDetails => _certificateDetails;
+  List<CertificateDetailModel> get certificateDetails {
+    // Return all details from all certificates for backward compatibility
+    final allDetails = <CertificateDetailModel>[];
+    _certificateDetailsMap.values.forEach((details) {
+      allDetails.addAll(details);
+    });
+    return allDetails;
+  }
+
+  List<CertificateDetailModel> getDetailsForCertificate(String mact) {
+    return _certificateDetailsMap[mact] ?? [];
+  }
+
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -43,16 +55,12 @@ class CertificateProvider with ChangeNotifier {
   }
 
   Future<void> loadCertificateDetails(String mact) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
     try {
-      _certificateDetails = await _repository.getCertificateDetails(mact);
+      final details = await _repository.getCertificateDetails(mact);
+      _certificateDetailsMap[mact] = details;
+      notifyListeners();
     } catch (e) {
       _error = e.toString();
-    } finally {
-      _isLoading = false;
       notifyListeners();
     }
   }
@@ -69,10 +77,8 @@ class CertificateProvider with ChangeNotifier {
         ngnhan: ngnhan,
       );
 
-      if (result['success']) {
-        // Reload details after allocation
-        await loadCertificateDetails(mact);
-      }
+      // Don't auto-reload to avoid concurrent modification
+      // Screen will handle reload
 
       return result['success'];
     } catch (e) {
@@ -92,10 +98,8 @@ class CertificateProvider with ChangeNotifier {
         mavt: mavt,
       );
 
-      if (result['success']) {
-        // Reload details after deallocation
-        await loadCertificateDetails(mact);
-      }
+      // Don't auto-reload to avoid concurrent modification
+      // Screen will handle reload
 
       return result['success'];
     } catch (e) {

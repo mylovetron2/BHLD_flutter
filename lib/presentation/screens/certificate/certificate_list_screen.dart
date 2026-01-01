@@ -315,6 +315,7 @@ class _CertificateListScreenState extends State<CertificateListScreen> {
                               MaterialPageRoute(
                                 builder: (context) => CertificateDetailScreen(
                                   certificate: certificate,
+                                  filterToDate: _toDate,
                                 ),
                               ),
                             );

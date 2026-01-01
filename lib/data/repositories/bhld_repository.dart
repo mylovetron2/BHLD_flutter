@@ -1,4 +1,5 @@
 import '../../core/constants/api_constants.dart';
+import '../models/allocation_history_model.dart';
 import '../models/certificate_detail_model.dart';
 import '../models/certificate_model.dart';
 import '../models/employee_model.dart';
@@ -185,6 +186,40 @@ class BhldRepository {
       };
     } catch (e) {
       throw Exception('Lỗi trả thiết bị: $e');
+    }
+  }
+
+  // ===== ALLOCATION HISTORY =====
+  Future<List<AllocationHistoryModel>> getAllocationHistory({
+    String? manv,
+    int? mavt,
+    String? fromDate,
+    String? toDate,
+    String? status,
+  }) async {
+    try {
+      final params = <String, String>{};
+      if (manv != null && manv.isNotEmpty) params['manv'] = manv;
+      if (mavt != null && mavt > 0) params['mavt'] = mavt.toString();
+      if (fromDate != null && fromDate.isNotEmpty) {
+        params['from_date'] = fromDate;
+      }
+      if (toDate != null && toDate.isNotEmpty) params['to_date'] = toDate;
+      if (status != null && status.isNotEmpty) params['status'] = status;
+
+      final response = await _apiService.get(
+        ApiConstants.allocationHistory,
+        params: params.isNotEmpty ? params : null,
+      );
+
+      if (response['success'] == true && response['data'] != null) {
+        return (response['data'] as List)
+            .map((json) => AllocationHistoryModel.fromJson(json))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      throw Exception('Lỗi tải lịch sử cấp phát: $e');
     }
   }
 }

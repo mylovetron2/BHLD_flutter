@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'presentation/providers/allocation_provider.dart';
 import 'presentation/providers/certificate_provider.dart';
 import 'presentation/providers/employee_provider.dart';
 import 'presentation/screens/home/home_screen.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => EmployeeProvider()),
         ChangeNotifierProvider(create: (_) => CertificateProvider()),
+        ChangeNotifierProvider(create: (_) => AllocationProvider()),
       ],
       child: MaterialApp(
         title: 'BHLD Mobile',
