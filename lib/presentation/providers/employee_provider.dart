@@ -50,4 +50,29 @@ class EmployeeProvider with ChangeNotifier {
     _selectedEmployee = null;
     notifyListeners();
   }
+
+  Future<bool> updateEmployeeName(String manv, String tennhanvien) async {
+    try {
+      final success = await _repository.updateEmployeeName(manv, tennhanvien);
+      if (success) {
+        // Update local list if successful
+        final index = _employees.indexWhere((e) => e.manv == manv);
+        if (index != -1) {
+          _employees[index] = EmployeeModel(
+            manv: _employees[index].manv,
+            tennhanvien: tennhanvien,
+            mapb: _employees[index].mapb,
+            tenphongban: _employees[index].tenphongban,
+            dinhmuc: _employees[index].dinhmuc,
+          );
+          notifyListeners();
+        }
+      }
+      return success;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
 }

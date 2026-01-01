@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../data/models/certificate_model.dart';
 import '../../providers/certificate_provider.dart';
+import '../../providers/employee_provider.dart';
 
 class CertificateUnifiedScreen extends StatefulWidget {
   const CertificateUnifiedScreen({super.key});
@@ -19,11 +20,16 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
   DateTime? _toDate;
   final Set<String> _expandedCertificates = {};
   final Map<String, String> _selectedEquipment = {}; // mavt -> mact
+  String? _selectedDepartment;
+  String? _selectedEmployee;
+  String? _selectedEmployeeName;
+  bool _showSidebar = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadEmployees();
       _loadCertificates();
     });
   }
@@ -34,10 +40,16 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
     super.dispose();
   }
 
+  void _loadEmployees() {
+    context.read<EmployeeProvider>().loadEmployees();
+  }
+
   void _loadCertificates() async {
     final provider = context.read<CertificateProvider>();
     await provider.loadCertificates(
-      manv: _searchController.text.isNotEmpty ? _searchController.text : null,
+      manv:
+          _selectedEmployee ??
+          (_searchController.text.isNotEmpty ? _searchController.text : null),
       fromDate: _fromDate != null
           ? DateFormat('yyyy-MM-dd').format(_fromDate!)
           : null,
@@ -256,7 +268,7 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
       // Key format: "mact-mavt", Value: mact
       // Since mact can contain '-', we use the value directly
       final mact = entry.value; // mact from map value (correct)
-      
+
       // Extract mavt by removing mact prefix and the separator '-'
       final mavtString = entry.key.substring(mact.length + 1); // Skip "mact-"
       final mavt = int.parse(mavtString);
@@ -602,212 +614,599 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
               label: Text('Cấp phát (${_selectedEquipment.length})'),
             )
           : null,
-      body: Column(
+      body: Row(
         children: [
-          // Filter section
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+          // Sidebar - Employee List
+          if (_showSidebar)
+            Container(
+              width: 320,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(right: BorderSide(color: Colors.grey.shade300)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(2, 0),
+                  ),
+                ],
+              ),
+              child: _buildEmployeeSidebar(),
             ),
+
+          // Main content - Certificates
+          Expanded(
             child: Column(
               children: [
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Tìm theo mã nhân viên',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              _loadCertificates();
-                            },
-                          )
-                        : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
+                // Filter section
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  onSubmitted: (_) => _loadCertificates(),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _selectDate(context, true),
-                        icon: const Icon(Icons.date_range, size: 18),
-                        label: Text(
-                          _fromDate != null
-                              ? DateFormat('dd/MM/yyyy').format(_fromDate!)
-                              : 'Từ ngày',
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _selectDate(context, false),
-                        icon: const Icon(Icons.date_range, size: 18),
-                        label: Text(
-                          _toDate != null
-                              ? DateFormat('dd/MM/yyyy').format(_toDate!)
-                              : 'Đến ngày',
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Certificate list
-          Expanded(
-            child: Consumer<CertificateProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (provider.error != null) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: Colors.red.shade300,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Lỗi tải dữ liệu',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                            provider.error!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: _loadCertificates,
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Thử lại'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (provider.certificates.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.description_outlined,
-                          size: 64,
-                          color: Colors.grey.shade400,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Không có chứng từ nào',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Thử thay đổi bộ lọc tìm kiếm',
-                          style: TextStyle(color: Colors.grey.shade600),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return RefreshIndicator(
-                  onRefresh: () async => _loadCertificates(),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: provider.certificates.length,
-                    itemBuilder: (context, index) {
-                      final certificate = provider.certificates[index];
-                      final isExpanded = _expandedCertificates.contains(
-                        certificate.mact,
-                      );
-
-                      return _CertificateCard(
-                        certificate: certificate,
-                        isExpanded: isExpanded,
-                        selectedEquipment: _selectedEquipment,
-                        toDate: _toDate,
-                        onToggleExpand: () async {
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(_showSidebar ? Icons.menu_open : Icons.menu),
+                        onPressed: () {
                           setState(() {
-                            if (isExpanded) {
-                              _expandedCertificates.remove(certificate.mact);
-                            } else {
-                              _expandedCertificates.add(certificate.mact);
-                            }
+                            _showSidebar = !_showSidebar;
                           });
+                        },
+                        tooltip: _showSidebar
+                            ? 'Ẩn danh sách'
+                            : 'Hiện danh sách',
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            if (_selectedEmployee != null)
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.person, size: 16),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            _selectedEmployeeName ??
+                                                _selectedEmployee ??
+                                                '',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          if (_selectedEmployeeName !=
+                                              _selectedEmployee)
+                                            Text(
+                                              'Mã: $_selectedEmployee',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.close, size: 16),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      onPressed: () {
+                                        setState(() {
+                                          _selectedEmployee = null;
+                                          _selectedEmployeeName = null;
+                                        });
+                                        _loadCertificates();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (_selectedEmployee == null)
+                              TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Tìm theo mã nhân viên',
+                                  prefixIcon: const Icon(Icons.search),
+                                  suffixIcon: _searchController.text.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.clear),
+                                          onPressed: () {
+                                            _searchController.clear();
+                                            _loadCertificates();
+                                          },
+                                        )
+                                      : null,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                onSubmitted: (_) => _loadCertificates(),
+                              ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => _selectDate(context, true),
+                                    icon: const Icon(
+                                      Icons.date_range,
+                                      size: 18,
+                                    ),
+                                    label: Text(
+                                      _fromDate != null
+                                          ? DateFormat(
+                                              'dd/MM/yyyy',
+                                            ).format(_fromDate!)
+                                          : 'Từ ngày',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () =>
+                                        _selectDate(context, false),
+                                    icon: const Icon(
+                                      Icons.date_range,
+                                      size: 18,
+                                    ),
+                                    label: Text(
+                                      _toDate != null
+                                          ? DateFormat(
+                                              'dd/MM/yyyy',
+                                            ).format(_toDate!)
+                                          : 'Đến ngày',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-                          if (!isExpanded) {
-                            await provider.loadCertificateDetails(
+                // Certificate list
+                Expanded(
+                  child: Consumer<CertificateProvider>(
+                    builder: (context, provider, child) {
+                      if (provider.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (provider.error != null) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 64,
+                                color: Colors.red.shade300,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Lỗi tải dữ liệu',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 8),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                ),
+                                child: Text(
+                                  provider.error!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                onPressed: _loadCertificates,
+                                icon: const Icon(Icons.refresh),
+                                label: const Text('Thử lại'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      if (provider.certificates.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.description_outlined,
+                                size: 64,
+                                color: Colors.grey.shade400,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Không có chứng từ nào',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Thử thay đổi bộ lọc tìm kiếm',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return RefreshIndicator(
+                        onRefresh: () async => _loadCertificates(),
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: provider.certificates.length,
+                          itemBuilder: (context, index) {
+                            final certificate = provider.certificates[index];
+                            final isExpanded = _expandedCertificates.contains(
                               certificate.mact,
                             );
-                          }
-                        },
-                        onToggleSelect: (mavt) {
-                          setState(() {
-                            final key = _getSelectedKey(certificate.mact, mavt);
-                            if (_selectedEquipment.containsKey(key)) {
-                              _selectedEquipment.remove(key);
-                            } else {
-                              _selectedEquipment[key] = certificate.mact;
-                            }
-                          });
-                        },
-                        onAllocate: (mavt, tenvt) =>
-                            _showAllocateDialog(certificate.mact, mavt, tenvt),
-                        onDeallocate: (mavt, tenvt) => _showDeallocateDialog(
-                          certificate.mact,
-                          mavt,
-                          tenvt,
+
+                            return _CertificateCard(
+                              certificate: certificate,
+                              isExpanded: isExpanded,
+                              selectedEquipment: _selectedEquipment,
+                              toDate: _toDate,
+                              onToggleExpand: () async {
+                                setState(() {
+                                  if (isExpanded) {
+                                    _expandedCertificates.remove(
+                                      certificate.mact,
+                                    );
+                                  } else {
+                                    _expandedCertificates.add(certificate.mact);
+                                  }
+                                });
+
+                                if (!isExpanded) {
+                                  await provider.loadCertificateDetails(
+                                    certificate.mact,
+                                  );
+                                }
+                              },
+                              onToggleSelect: (mavt) {
+                                setState(() {
+                                  final key = _getSelectedKey(
+                                    certificate.mact,
+                                    mavt,
+                                  );
+                                  if (_selectedEquipment.containsKey(key)) {
+                                    _selectedEquipment.remove(key);
+                                  } else {
+                                    _selectedEquipment[key] = certificate.mact;
+                                  }
+                                });
+                              },
+                              onAllocate: (mavt, tenvt) => _showAllocateDialog(
+                                certificate.mact,
+                                mavt,
+                                tenvt,
+                              ),
+                              onDeallocate: (mavt, tenvt) =>
+                                  _showDeallocateDialog(
+                                    certificate.mact,
+                                    mavt,
+                                    tenvt,
+                                  ),
+                            );
+                          },
                         ),
                       );
                     },
                   ),
-                );
-              },
+                ),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildEmployeeSidebar() {
+    return Consumer<EmployeeProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        print('DEBUG SIDEBAR: employees.length = ${provider.employees.length}');
+        if (provider.employees.isNotEmpty) {
+          print(
+            'DEBUG: First employee manv=${provider.employees[0].manv}, tennhanvien="${provider.employees[0].tennhanvien}"',
+          );
+        }
+
+        if (provider.employees.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.people_outline,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Chưa có nhân viên',
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Vui lòng kiểm tra kết nối',
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: _loadEmployees,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Tải lại'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (provider.employees.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.people_outline,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Chưa có nhân viên',
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Vui lòng kiểm tra kết nối',
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: _loadEmployees,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Tải lại'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Filter employees with names only
+        final employeesWithName = provider.employees
+            .where(
+              (emp) => emp.tennhanvien != null && emp.tennhanvien.isNotEmpty,
+            )
+            .toList();
+
+        // Group employees by department
+        final employeesByDept = <String, List<dynamic>>{};
+        for (var emp in employeesWithName) {
+          final dept = emp.tenphongban ?? emp.mapb ?? 'Chưa phân loại';
+          employeesByDept.putIfAbsent(dept, () => []).add(emp);
+        }
+
+        return Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.people, color: Theme.of(context).primaryColor),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Danh sách nhân viên',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Department filter
+            if (employeesByDept.keys.length > 1)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey.shade200),
+                  ),
+                ),
+                child: DropdownButtonFormField<String>(
+                  value: _selectedDepartment,
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Lọc theo đội',
+                    prefixIcon: Icon(Icons.filter_list, size: 18),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                  items: [
+                    const DropdownMenuItem(
+                      value: null,
+                      child: Text('Tất cả đội'),
+                    ),
+                    ...employeesByDept.keys.map((dept) {
+                      return DropdownMenuItem(value: dept, child: Text(dept));
+                    }),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedDepartment = value;
+                      _selectedEmployee = null;
+                    });
+                  },
+                ),
+              ),
+
+            // Employee list
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                itemCount: employeesByDept.length,
+                itemBuilder: (context, index) {
+                  final dept = employeesByDept.keys.elementAt(index);
+
+                  // Skip if filtered and not matching
+                  if (_selectedDepartment != null &&
+                      _selectedDepartment != dept) {
+                    return const SizedBox.shrink();
+                  }
+
+                  final employees = employeesByDept[dept]!;
+
+                  return ExpansionTile(
+                    initiallyExpanded:
+                        _selectedDepartment == dept ||
+                        employeesByDept.length == 1,
+                    leading: CircleAvatar(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      radius: 16,
+                      child: Text(
+                        '${employees.length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      dept,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${employees.length} nhân viên',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    children: employees.map((emp) {
+                      final isSelected = _selectedEmployee == emp.manv;
+                      final displayName = emp.tennhanvien.isNotEmpty
+                          ? emp.tennhanvien
+                          : 'NV ${emp.manv}';
+
+                      return ListTile(
+                        dense: true,
+                        selected: isSelected,
+                        selectedTileColor: Colors.blue.shade50,
+                        leading: Icon(
+                          Icons.person,
+                          size: 20,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey,
+                        ),
+                        title: Text(
+                          displayName,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        subtitle: Text(
+                          emp.manv,
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _selectedEmployee = emp.manv;
+                            _selectedEmployeeName = displayName;
+                          });
+                          _loadCertificates();
+                        },
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

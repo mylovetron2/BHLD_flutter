@@ -47,6 +47,19 @@ class BhldRepository {
     }
   }
 
+  Future<bool> updateEmployeeName(String manv, String tennhanvien) async {
+    try {
+      final response = await _apiService.put(
+        ApiConstants.employees,
+        body: {'manv': manv, 'tennhanvien': tennhanvien},
+      );
+
+      return response['success'] == true;
+    } catch (e) {
+      throw Exception('Lỗi cập nhật tên nhân viên: $e');
+    }
+  }
+
   // ===== CERTIFICATE =====
   Future<List<CertificateModel>> getCertificates({
     String? manv,
