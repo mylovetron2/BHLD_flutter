@@ -581,9 +581,91 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue.shade700, Colors.blue.shade900],
+            ),
+          ),
+        ),
         title: _selectedEquipment.isNotEmpty
-            ? Text('${_selectedEquipment.length} thiết bị đã chọn')
-            : const Text('Quản lý chứng từ'),
+            ? Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade600,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      '${_selectedEquipment.length} thiết bị đã chọn',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.asset('logo.jpg', fit: BoxFit.cover),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Quản lý chứng từ',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.2,
+                        ),
+                      ),
+                      Text(
+                        'BHLD',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.orange.shade300,
+                          letterSpacing: 1.5,
+                          height: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
         actions: [
           if (_selectedEquipment.isNotEmpty)
             TextButton.icon(
@@ -697,7 +779,8 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                                             padding: const EdgeInsets.all(8),
                                             decoration: BoxDecoration(
                                               color: Colors.blue.shade700,
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                             child: const Icon(
                                               Icons.person,
@@ -722,7 +805,8 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                                                     color: Colors.blue.shade900,
                                                   ),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                                 if (_selectedEmployeeName !=
                                                     _selectedEmployee) ...[
@@ -731,8 +815,10 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                                                     'Mã: $_selectedEmployee',
                                                     style: TextStyle(
                                                       fontSize: 11,
-                                                      color: Colors.blue.shade700,
-                                                      fontWeight: FontWeight.w600,
+                                                      color:
+                                                          Colors.blue.shade700,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
                                                   ),
                                                 ],
@@ -797,8 +883,9 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                                           const SizedBox(height: 6),
                                           Text(
                                             _toDate != null
-                                                ? DateFormat('dd/MM/yyyy')
-                                                    .format(_toDate!)
+                                                ? DateFormat(
+                                                    'dd/MM/yyyy',
+                                                  ).format(_toDate!)
                                                 : 'Chọn ngày',
                                             style: const TextStyle(
                                               fontSize: 16,
@@ -1090,19 +1177,39 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+                gradient: LinearGradient(
+                  colors: [Colors.orange.shade400, Colors.orange.shade600],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.orange.shade200,
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  Icon(Icons.people, color: Theme.of(context).primaryColor),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.people,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Text(
                       'Danh sách nhân viên',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -1115,22 +1222,46 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: Colors.blue.shade50,
                   border: Border(
-                    bottom: BorderSide(color: Colors.grey.shade200),
+                    bottom: BorderSide(color: Colors.blue.shade100, width: 2),
                   ),
                 ),
                 child: DropdownButtonFormField<String>(
                   value: _selectedDepartment,
                   isExpanded: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Lọc theo đội',
-                    prefixIcon: Icon(Icons.filter_list, size: 18),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                    labelStyle: TextStyle(
+                      color: Colors.blue.shade700,
+                      fontWeight: FontWeight.w600,
                     ),
-                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(
+                      Icons.filter_list,
+                      size: 20,
+                      color: Colors.blue.shade700,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.blue.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.blue.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Colors.blue.shade700,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
                     isDense: true,
                   ),
                   items: [
@@ -1167,139 +1298,204 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
 
                   final employees = employeesByDept[dept]!;
 
-                  return ExpansionTile(
-                    initiallyExpanded:
-                        _selectedDepartment == dept ||
-                        employeesByDept.length == 1,
-                    leading: CircleAvatar(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      radius: 16,
-                      child: Text(
-                        '${employees.length}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.blue.shade200,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue.shade50,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
                         ),
-                      ),
+                      ],
                     ),
-                    title: Text(
-                      dept,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                    subtitle: Text(
-                      '${employees.length} nhân viên',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    children: employees.map((emp) {
-                      final isSelected = _selectedEmployee == emp.manv;
-                      final displayName = emp.tennhanvien.isNotEmpty
-                          ? emp.tennhanvien
-                          : 'NV ${emp.manv}';
-
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
+                    child: ExpansionTile(
+                      initiallyExpanded:
+                          _selectedDepartment == dept ||
+                          employeesByDept.length == 1,
+                      leading: Container(
+                        width: 42,
+                        height: 42,
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? Theme.of(context).primaryColor.withOpacity(0.1)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.blue.shade600,
+                              Colors.blue.shade700,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blue.shade300,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                        child: ListTile(
-                          dense: false,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
+                        child: Center(
+                          child: Text(
+                            '${employees.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        dept,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.blue.shade900,
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.person_outline,
+                              size: 14,
+                              color: Colors.blue.shade600,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${employees.length} nhân viên',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.blue.shade700,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      children: employees.map((emp) {
+                        final isSelected = _selectedEmployee == emp.manv;
+                        final displayName = emp.tennhanvien.isNotEmpty
+                            ? emp.tennhanvien
+                            : 'NV ${emp.manv}';
+
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12,
                             vertical: 4,
                           ),
-                          leading: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              gradient: isSelected
-                                  ? LinearGradient(
-                                      colors: [
-                                        Theme.of(context).primaryColor,
-                                        Theme.of(context).colorScheme.secondary,
-                                      ],
-                                    )
-                                  : LinearGradient(
-                                      colors: [
-                                        Colors.grey.shade300,
-                                        Colors.grey.shade400,
-                                      ],
-                                    ),
-                              borderRadius: BorderRadius.circular(10),
+                          decoration: BoxDecoration(
+                            gradient: isSelected
+                                ? LinearGradient(
+                                    colors: [
+                                      Colors.green.shade400,
+                                      Colors.green.shade500,
+                                    ],
+                                  )
+                                : null,
+                            color: isSelected ? null : Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Colors.green.shade600
+                                  : Colors.grey.shade300,
+                              width: isSelected ? 2 : 1,
                             ),
-                            child: Center(
-                              child: Text(
-                                emp.tennhanvien.isNotEmpty
-                                    ? emp.tennhanvien[0].toUpperCase()
-                                    : emp.manv.substring(0, 1),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.green.shade200,
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: ListTile(
+                            dense: false,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            title: Text(
+                              displayName,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? Colors.white.withOpacity(0.2)
+                                      : Colors.blue.shade100,
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? Colors.white.withOpacity(0.3)
+                                        : Colors.blue.shade300,
+                                  ),
+                                ),
+                                child: Text(
+                                  emp.manv,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.blue.shade900,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
+                            trailing: isSelected
+                                ? Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.green.shade300,
+                                          blurRadius: 4,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Icon(
+                                      Icons.check_circle,
+                                      color: Colors.green.shade700,
+                                      size: 24,
+                                    ),
+                                  )
+                                : null,
+                            onTap: () {
+                              setState(() {
+                                _selectedEmployee = emp.manv;
+                                _selectedEmployeeName = displayName;
+                              });
+                              _loadCertificates();
+                            },
                           ),
-                          title: Text(
-                            displayName,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.black87,
-                            ),
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.badge_outlined,
-                                  size: 14,
-                                  color: Colors.grey.shade600,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  emp.manv,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey.shade700,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          trailing: isSelected
-                              ? Icon(
-                                  Icons.check_circle,
-                                  color: Theme.of(context).primaryColor,
-                                  size: 24,
-                                )
-                              : null,
-                          onTap: () {
-                            setState(() {
-                              _selectedEmployee = emp.manv;
-                              _selectedEmployeeName = displayName;
-                            });
-                            _loadCertificates();
-                          },
-                        ),
-                      );
-                    }).toList(),
+                        );
+                      }).toList(),
+                    ),
                   );
                 },
               ),
@@ -1379,9 +1575,9 @@ class _CertificateCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          DateFormat('dd/MM/yyyy').format(
-                            DateTime.parse(certificate.ngct),
-                          ),
+                          DateFormat(
+                            'dd/MM/yyyy',
+                          ).format(DateTime.parse(certificate.ngct)),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -1466,7 +1662,9 @@ class _CertificateCard extends StatelessWidget {
                       ),
                     ),
                     child: InkWell(
-                      onTap: !isAllocated ? () => onToggleSelect(detail.mavt) : null,
+                      onTap: !isAllocated
+                          ? () => onToggleSelect(detail.mavt)
+                          : null,
                       borderRadius: BorderRadius.circular(12),
                       child: Padding(
                         padding: const EdgeInsets.all(12),
@@ -1475,159 +1673,168 @@ class _CertificateCard extends StatelessWidget {
                             if (!isAllocated)
                               Checkbox(
                                 value: isSelected,
-                                onChanged: (value) => onToggleSelect(detail.mavt),
+                                onChanged: (value) =>
+                                    onToggleSelect(detail.mavt),
                               ),
-                          // Icon vật tư theo danh mục
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: category.backgroundColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: category.color.withOpacity(0.3),
-                                width: 2,
-                              ),
-                            ),
-                            child: Icon(
-                              category.icon,
-                              color: category.color,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Tên thiết bị nổi bật
-                                Text(
-                                  detail.tenvt ?? 'Thiết bị ${detail.mavt}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: category.color,
-                                    height: 1.2,
-                                  ),
+                            // Icon vật tư theo danh mục
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: category.backgroundColor,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: category.color.withOpacity(0.3),
+                                  width: 2,
                                 ),
-                                const SizedBox(height: 4),
-                                // Mã vật tư và danh mục
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 2,
+                              ),
+                              child: Icon(
+                                category.icon,
+                                color: category.color,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Tên thiết bị nổi bật
+                                  Text(
+                                    detail.tenvt ?? 'Thiết bị ${detail.mavt}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                      color: category.color,
+                                      height: 1.2,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  // Mã vật tư và danh mục
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade100,
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Mã: ${detail.mavt}',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.grey.shade700,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                       ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
-                                        borderRadius: BorderRadius.circular(4),
+                                      const SizedBox(width: 6),
+                                      Icon(
+                                        category.icon,
+                                        size: 12,
+                                        color: category.color.withOpacity(0.7),
                                       ),
-                                      child: Text(
-                                        'Mã: ${detail.mavt}',
+                                      const SizedBox(width: 2),
+                                      Text(
+                                        category.name,
                                         style: TextStyle(
                                           fontSize: 11,
-                                          color: Colors.grey.shade700,
+                                          color: category.color.withOpacity(
+                                            0.8,
+                                          ),
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Icon(
-                                      category.icon,
-                                      size: 12,
-                                      color: category.color.withOpacity(0.7),
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Text(
-                                      category.name,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: category.color.withOpacity(0.8),
-                                        fontWeight: FontWeight.w600,
+                                    ],
+                                  ),
+                                  if (isAllocated) ...[
+                                    const SizedBox(height: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.shade50,
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: Colors.green.shade300,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Nhận: ${DateFormat('dd/MM/yy').format(DateTime.parse(detail.ngnhan))} • Nhận tiếp theo: ${DateFormat('dd/MM/yy').format(DateTime.parse(detail.ngnhantt))}',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.green.shade800,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                   ],
-                                ),
-                                if (isAllocated) ...[
-                                  const SizedBox(height: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green.shade50,
-                                      borderRadius: BorderRadius.circular(4),
-                                      border: Border.all(
-                                        color: Colors.green.shade300,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'Nhận: ${DateFormat('dd/MM/yy').format(DateTime.parse(detail.ngnhan))} • Nhận tiếp theo: ${DateFormat('dd/MM/yy').format(DateTime.parse(detail.ngnhantt))}',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: Colors.green.shade800,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
                                 ],
-                              ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          // Status indicator
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isAllocated
-                                  ? Colors.green.shade50
-                                  : Colors.orange.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
+                            const SizedBox(width: 8),
+                            // Status indicator
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isAllocated
+                                    ? Colors.green.shade50
+                                    : Colors.orange.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isAllocated
+                                      ? Colors.green
+                                      : Colors.orange,
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Icon(
+                                isAllocated
+                                    ? Icons.check_circle
+                                    : Icons.schedule,
                                 color: isAllocated
                                     ? Colors.green
                                     : Colors.orange,
-                                width: 1.5,
+                                size: 16,
                               ),
                             ),
-                            child: Icon(
-                              isAllocated ? Icons.check_circle : Icons.schedule,
-                              color: isAllocated ? Colors.green : Colors.orange,
-                              size: 16,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          if (isAllocated)
-                            IconButton(
-                              onPressed: () => onDeallocate(
-                                detail.mavt,
-                                detail.tenvt ?? 'Thiết bị ${detail.mavt}',
+                            const SizedBox(width: 4),
+                            if (isAllocated)
+                              IconButton(
+                                onPressed: () => onDeallocate(
+                                  detail.mavt,
+                                  detail.tenvt ?? 'Thiết bị ${detail.mavt}',
+                                ),
+                                icon: const Icon(Icons.remove_circle_outline),
+                                color: Colors.red,
+                                tooltip: 'Thu hồi',
+                                iconSize: 20,
+                              )
+                            else
+                              IconButton(
+                                onPressed: () => onAllocate(
+                                  detail.mavt,
+                                  detail.tenvt ?? 'Thiết bị ${detail.mavt}',
+                                ),
+                                icon: const Icon(Icons.add_circle_outline),
+                                color: Theme.of(context).primaryColor,
+                                tooltip: 'Cấp phát',
+                                iconSize: 20,
                               ),
-                              icon: const Icon(Icons.remove_circle_outline),
-                              color: Colors.red,
-                              tooltip: 'Thu hồi',
-                              iconSize: 20,
-                            )
-                          else
-                            IconButton(
-                              onPressed: () => onAllocate(
-                                detail.mavt,
-                                detail.tenvt ?? 'Thiết bị ${detail.mavt}',
-                              ),
-                              icon: const Icon(Icons.add_circle_outline),
-                              color: Theme.of(context).primaryColor,
-                              tooltip: 'Cấp phát',
-                              iconSize: 20,
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   );
                 },
               ),

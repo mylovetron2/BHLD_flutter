@@ -674,7 +674,9 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
                                         onChanged: (value) {
                                           setState(() {
                                             if (value == true) {
-                                              _selectedEquipment.add(detail.mavt);
+                                              _selectedEquipment.add(
+                                                detail.mavt,
+                                              );
                                             } else {
                                               _selectedEquipment.remove(
                                                 detail.mavt,
@@ -684,211 +686,141 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
                                         },
                                       ),
                                     ),
-                                // Icon vật tư theo danh mục
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: category.backgroundColor,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: category.color.withOpacity(0.3),
-                                      width: 2,
+                                  // Icon vật tư theo danh mục
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: category.backgroundColor,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: category.color.withOpacity(0.3),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      category.icon,
+                                      color: category.color,
+                                      size: 32,
                                     ),
                                   ),
-                                  child: Icon(
-                                    category.icon,
-                                    color: category.color,
-                                    size: 32,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Tên thiết bị nổi bật hơn
-                                      Text(
-                                        detail.tenvt ??
-                                            'Thiết bị ${detail.mavt}',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          color: category.color,
-                                          height: 1.2,
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Tên thiết bị nổi bật hơn
+                                        Text(
+                                          detail.tenvt ??
+                                              'Thiết bị ${detail.mavt}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: category.color,
+                                            height: 1.2,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      // Mã vật tư và danh mục
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.shade100,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                            ),
-                                            child: Text(
-                                              'Mã: ${detail.mavt}',
-                                              style: TextStyle(
-                                                color: Colors.grey.shade700,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
+                                        const SizedBox(height: 4),
+                                        // Mã vật tư và danh mục
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade100,
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                              child: Text(
+                                                'Mã: ${detail.mavt}',
+                                                style: TextStyle(
+                                                  color: Colors.grey.shade700,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: category.backgroundColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  category.icon,
-                                                  size: 14,
-                                                  color: category.color,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  category.name,
-                                                  style: TextStyle(
-                                                    color: category.color,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
                                                   ),
-                                                ),
-                                              ],
+                                              decoration: BoxDecoration(
+                                                color: category.backgroundColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    category.icon,
+                                                    size: 14,
+                                                    color: category.color,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    category.name,
+                                                    style: TextStyle(
+                                                      color: category.color,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // Status chip
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isAllocated
-                                        ? Colors.green.shade50
-                                        : Colors.orange.shade50,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: isAllocated
-                                          ? Colors.green
-                                          : Colors.orange,
-                                      width: 1.5,
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        isAllocated
-                                            ? Icons.check_circle
-                                            : Icons.schedule,
-                                        size: 16,
+                                  // Status chip
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isAllocated
+                                          ? Colors.green.shade50
+                                          : Colors.orange.shade50,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
                                         color: isAllocated
                                             ? Colors.green
                                             : Colors.orange,
+                                        width: 1.5,
                                       ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        isAllocated ? 'Đã cấp' : 'Chưa cấp',
-                                        style: TextStyle(
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          isAllocated
+                                              ? Icons.check_circle
+                                              : Icons.schedule,
+                                          size: 16,
                                           color: isAllocated
-                                              ? Colors.green.shade700
-                                              : Colors.orange.shade700,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold,
+                                              ? Colors.green
+                                              : Colors.orange,
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (isAllocated) ...[
-                              const Divider(height: 24),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
+                                        const SizedBox(width: 4),
                                         Text(
-                                          'Ngày nhận',
+                                          isAllocated ? 'Đã cấp' : 'Chưa cấp',
                                           style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                        Text(
-                                          DateFormat('dd/MM/yyyy').format(
-                                            DateTime.parse(detail.ngnhan),
-                                          ),
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Hạn trả',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                        Text(
-                                          DateFormat('dd/MM/yyyy').format(
-                                            DateTime.parse(detail.ngnhantt),
-                                          ),
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Định mức',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${detail.dmtg} tháng',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
+                                            color: isAllocated
+                                                ? Colors.green.shade700
+                                                : Colors.orange.shade700,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ],
@@ -896,42 +828,115 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
                                   ),
                                 ],
                               ),
-                            ],
-                            const SizedBox(height: 12),
-                            SizedBox(
-                              width: double.infinity,
-                              child: isAllocated
-                                  ? OutlinedButton.icon(
-                                      onPressed: () => _showDeallocateDialog(
-                                        detail.mavt,
-                                        detail.tenvt ??
-                                            'Thiết bị ${detail.mavt}',
+                              if (isAllocated) ...[
+                                const Divider(height: 24),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Ngày nhận',
+                                            style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          Text(
+                                            DateFormat('dd/MM/yyyy').format(
+                                              DateTime.parse(detail.ngnhan),
+                                            ),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      icon: const Icon(
-                                        Icons.remove_circle_outline,
-                                      ),
-                                      label: const Text('Thu hồi'),
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: Colors.red,
-                                      ),
-                                    )
-                                  : ElevatedButton.icon(
-                                      onPressed: () => _showAllocateDialog(
-                                        detail.mavt,
-                                        detail.tenvt ??
-                                            'Thiết bị ${detail.mavt}',
-                                      ),
-                                      icon: const Icon(
-                                        Icons.add_circle_outline,
-                                      ),
-                                      label: const Text('Cấp phát'),
                                     ),
-                            ),
-                          ],
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Hạn trả',
+                                            style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          Text(
+                                            DateFormat('dd/MM/yyyy').format(
+                                              DateTime.parse(detail.ngnhantt),
+                                            ),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Định mức',
+                                            style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${detail.dmtg} tháng',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: isAllocated
+                                    ? OutlinedButton.icon(
+                                        onPressed: () => _showDeallocateDialog(
+                                          detail.mavt,
+                                          detail.tenvt ??
+                                              'Thiết bị ${detail.mavt}',
+                                        ),
+                                        icon: const Icon(
+                                          Icons.remove_circle_outline,
+                                        ),
+                                        label: const Text('Thu hồi'),
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: Colors.red,
+                                        ),
+                                      )
+                                    : ElevatedButton.icon(
+                                        onPressed: () => _showAllocateDialog(
+                                          detail.mavt,
+                                          detail.tenvt ??
+                                              'Thiết bị ${detail.mavt}',
+                                        ),
+                                        icon: const Icon(
+                                          Icons.add_circle_outline,
+                                        ),
+                                        label: const Text('Cấp phát'),
+                                      ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
+                    );
                   },
                 );
               },
