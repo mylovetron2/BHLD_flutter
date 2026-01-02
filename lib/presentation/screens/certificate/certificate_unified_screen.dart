@@ -697,28 +697,35 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
               label: Text('Cấp phát (${_selectedEquipment.length})'),
             )
           : null,
-      body: Row(
-        children: [
-          // Sidebar - Employee List
-          if (_showSidebar)
-            Container(
-              width: 320,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(right: BorderSide(color: Colors.grey.shade300)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(2, 0),
-                  ),
-                ],
-              ),
-              child: _buildEmployeeSidebar(),
-            ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWideScreen = constraints.maxWidth >= 800;
+          final showSidebarOnMobile = _showSidebar && isWideScreen;
 
-          // Main content - Certificates
-          Expanded(
+          return Row(
+            children: [
+              // Sidebar - Employee List (hidden on mobile)
+              if (showSidebarOnMobile)
+                Container(
+                  width: 320,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      right: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(2, 0),
+                      ),
+                    ],
+                  ),
+                  child: _buildEmployeeSidebar(),
+                ),
+
+              // Main content - Certificates
+              Expanded(
             child: Column(
               children: [
                 // Filter section
@@ -749,186 +756,71 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Column(
-                          children: [
-                            // Ngày chứng từ và Nhân viên trên 1 dòng
-                            Row(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final isNarrow = constraints.maxWidth < 400;
+                            return Column(
                               children: [
-                                // Thông tin nhân viên (bên trái)
-                                if (_selectedEmployee != null)
-                                  Expanded(
-                                    flex: 3,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Colors.blue.shade100,
-                                            Colors.blue.shade50,
-                                          ],
+                                // Ngày chứng từ và Nhân viên - responsive layout
+                                if (isNarrow) ...[
+                                  // Mobile: Stack vertically
+                                  if (_selectedEmployee != null) ...[
+                                    _buildEmployeeInfo(),
+                                    const SizedBox(height: 8),
+                                  ],
+                                  _buildDateSelector(),
+                                ] else ...[
+                                  // Desktop: Side by side
+                                  Row(
+                                    children: [
+                                      if (_selectedEmployee != null) ...[
+                                        Expanded(
+                                          flex: 3,
+                                          child: _buildEmployeeInfo(),
                                         ),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: Colors.blue.shade300,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: Colors.blue.shade700,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(
-                                              Icons.person,
-                                              size: 20,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  _selectedEmployeeName ??
-                                                      _selectedEmployee ??
-                                                      '',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                    color: Colors.blue.shade900,
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                if (_selectedEmployeeName !=
-                                                    _selectedEmployee) ...[
-                                                  const SizedBox(height: 2),
-                                                  Text(
-                                                    'Mã: $_selectedEmployee',
-                                                    style: TextStyle(
-                                                      fontSize: 11,
-                                                      color:
-                                                          Colors.blue.shade700,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ],
-                                            ),
-                                          ),
-                                          IconButton(
-                                            icon: const Icon(
-                                              Icons.close,
-                                              size: 18,
-                                              color: Colors.red,
-                                            ),
-                                            padding: EdgeInsets.zero,
-                                            constraints: const BoxConstraints(),
-                                            onPressed: () {
-                                              setState(() {
-                                                _selectedEmployee = null;
-                                                _selectedEmployeeName = null;
-                                              });
-                                              _loadCertificates();
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                if (_selectedEmployee != null)
-                                  const SizedBox(width: 12),
-                                // Ngày chứng từ (bên phải)
-                                Expanded(
-                                  flex: 2,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.orange.shade400,
-                                          Colors.orange.shade600,
-                                        ],
-                                      ),
-                                      borderRadius: BorderRadius.circular(12),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.orange.shade200,
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
+                                        const SizedBox(width: 12),
                                       ],
-                                    ),
-                                    child: InkWell(
-                                      onTap: () => _selectDate(context, false),
-                                      child: Column(
-                                        children: [
-                                          const Icon(
-                                            Icons.calendar_month,
-                                            size: 24,
-                                            color: Colors.white,
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Text(
-                                            _toDate != null
-                                                ? DateFormat(
-                                                    'dd/MM/yyyy',
-                                                  ).format(_toDate!)
-                                                : 'Chọn ngày',
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
+                                      Expanded(
+                                        flex: 2,
+                                        child: _buildDateSelector(),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                                const SizedBox(height: 12),
+                                if (_selectedEmployee == null)
+                                  TextField(
+                                    controller: _searchController,
+                                    decoration: InputDecoration(
+                                      hintText: 'Tìm theo mã nhân viên',
+                                      prefixIcon: const Icon(Icons.search),
+                                      suffixIcon:
+                                          _searchController.text.isNotEmpty
+                                              ? IconButton(
+                                                  icon: const Icon(Icons.clear),
+                                                  onPressed: () {
+                                                    _searchController.clear();
+                                                    _loadCertificates();
+                                                  },
+                                                )
+                                              : null,
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
                                       ),
                                     ),
+                                    onSubmitted: (_) => _loadCertificates(),
                                   ),
-                                ),
                               ],
-                            ),
-                            const SizedBox(height: 12),
-                            if (_selectedEmployee == null)
-                              TextField(
-                                controller: _searchController,
-                                decoration: InputDecoration(
-                                  hintText: 'Tìm theo mã nhân viên',
-                                  prefixIcon: const Icon(Icons.search),
-                                  suffixIcon: _searchController.text.isNotEmpty
-                                      ? IconButton(
-                                          icon: const Icon(Icons.clear),
-                                          onPressed: () {
-                                            _searchController.clear();
-                                            _loadCertificates();
-                                          },
-                                        )
-                                      : null,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                ),
-                                onSubmitted: (_) => _loadCertificates(),
-                              ),
-                          ],
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -1072,7 +964,139 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
               ],
             ),
           ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildEmployeeInfo() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.blue.shade100,
+            Colors.blue.shade50,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.blue.shade300,
+          width: 2,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade700,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(
+              Icons.person,
+              size: 20,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _selectedEmployeeName ?? _selectedEmployee ?? '',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.blue.shade900,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (_selectedEmployeeName != _selectedEmployee) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    'Mã: $_selectedEmployee',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.blue.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.close,
+              size: 18,
+              color: Colors.red,
+            ),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: () {
+              setState(() {
+                _selectedEmployee = null;
+                _selectedEmployeeName = null;
+              });
+              _loadCertificates();
+            },
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDateSelector() {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.orange.shade400,
+            Colors.orange.shade600,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.shade200,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () => _selectDate(context, false),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.calendar_month,
+              size: 24,
+              color: Colors.white,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              _toDate != null
+                  ? DateFormat('dd/MM/yyyy').format(_toDate!)
+                  : 'Chọn ngày',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
