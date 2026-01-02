@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URL - thay đổi theo môi trường
-  static const String baseUrl = 'http://diavatly.com/BHLD/api';
+  static const String baseUrl = 'https://diavatly.com/BHLD/api';
 
   // Endpoints
   static const String employees = '/employees.php';

@@ -726,76 +726,78 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
 
               // Main content - Certificates
               Expanded(
-            child: Column(
-              children: [
-                // Filter section
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                child: Column(
+                  children: [
+                    // Filter section
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(_showSidebar ? Icons.menu_open : Icons.menu),
-                        onPressed: () {
-                          setState(() {
-                            _showSidebar = !_showSidebar;
-                          });
-                        },
-                        tooltip: _showSidebar
-                            ? 'Ẩn danh sách'
-                            : 'Hiện danh sách',
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final isNarrow = constraints.maxWidth < 400;
-                            return Column(
-                              children: [
-                                // Ngày chứng từ và Nhân viên - responsive layout
-                                if (isNarrow) ...[
-                                  // Mobile: Stack vertically
-                                  if (_selectedEmployee != null) ...[
-                                    _buildEmployeeInfo(),
-                                    const SizedBox(height: 8),
-                                  ],
-                                  _buildDateSelector(),
-                                ] else ...[
-                                  // Desktop: Side by side
-                                  Row(
-                                    children: [
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              _showSidebar ? Icons.menu_open : Icons.menu,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showSidebar = !_showSidebar;
+                              });
+                            },
+                            tooltip: _showSidebar
+                                ? 'Ẩn danh sách'
+                                : 'Hiện danh sách',
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final isNarrow = constraints.maxWidth < 400;
+                                return Column(
+                                  children: [
+                                    // Ngày chứng từ và Nhân viên - responsive layout
+                                    if (isNarrow) ...[
+                                      // Mobile: Stack vertically
                                       if (_selectedEmployee != null) ...[
-                                        Expanded(
-                                          flex: 3,
-                                          child: _buildEmployeeInfo(),
-                                        ),
-                                        const SizedBox(width: 12),
+                                        _buildEmployeeInfo(),
+                                        const SizedBox(height: 8),
                                       ],
-                                      Expanded(
-                                        flex: 2,
-                                        child: _buildDateSelector(),
+                                      _buildDateSelector(),
+                                    ] else ...[
+                                      // Desktop: Side by side
+                                      Row(
+                                        children: [
+                                          if (_selectedEmployee != null) ...[
+                                            Expanded(
+                                              flex: 3,
+                                              child: _buildEmployeeInfo(),
+                                            ),
+                                            const SizedBox(width: 12),
+                                          ],
+                                          Expanded(
+                                            flex: 2,
+                                            child: _buildDateSelector(),
+                                          ),
+                                        ],
                                       ),
                                     ],
-                                  ),
-                                ],
-                                const SizedBox(height: 12),
-                                if (_selectedEmployee == null)
-                                  TextField(
-                                    controller: _searchController,
-                                    decoration: InputDecoration(
-                                      hintText: 'Tìm theo mã nhân viên',
-                                      prefixIcon: const Icon(Icons.search),
-                                      suffixIcon:
-                                          _searchController.text.isNotEmpty
+                                    const SizedBox(height: 12),
+                                    if (_selectedEmployee == null)
+                                      TextField(
+                                        controller: _searchController,
+                                        decoration: InputDecoration(
+                                          hintText: 'Tìm theo mã nhân viên',
+                                          prefixIcon: const Icon(Icons.search),
+                                          suffixIcon:
+                                              _searchController.text.isNotEmpty
                                               ? IconButton(
                                                   icon: const Icon(Icons.clear),
                                                   onPressed: () {
@@ -804,166 +806,181 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                                                   },
                                                 )
                                               : null,
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 12,
+                                              ),
+                                        ),
+                                        onSubmitted: (_) => _loadCertificates(),
                                       ),
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Certificate list
+                    Expanded(
+                      child: Consumer<CertificateProvider>(
+                        builder: (context, provider, child) {
+                          if (provider.isLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (provider.error != null) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    size: 64,
+                                    color: Colors.red.shade300,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Lỗi tải dữ liệu',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                    ),
+                                    child: Text(
+                                      provider.error!,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
                                       ),
                                     ),
-                                    onSubmitted: (_) => _loadCertificates(),
                                   ),
-                              ],
+                                  const SizedBox(height: 16),
+                                  ElevatedButton.icon(
+                                    onPressed: _loadCertificates,
+                                    icon: const Icon(Icons.refresh),
+                                    label: const Text('Thử lại'),
+                                  ),
+                                ],
+                              ),
                             );
-                          },
-                        ),
+                          }
+
+                          if (provider.certificates.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.description_outlined,
+                                    size: 64,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Không có chứng từ nào',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Thử thay đổi bộ lọc tìm kiếm',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          return RefreshIndicator(
+                            onRefresh: () async => _loadCertificates(),
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: provider.certificates.length,
+                              itemBuilder: (context, index) {
+                                final certificate =
+                                    provider.certificates[index];
+                                final isExpanded = _expandedCertificates
+                                    .contains(certificate.mact);
+
+                                return _CertificateCard(
+                                  certificate: certificate,
+                                  isExpanded: isExpanded,
+                                  selectedEquipment: _selectedEquipment,
+                                  toDate: _toDate,
+                                  onToggleExpand: () async {
+                                    setState(() {
+                                      if (isExpanded) {
+                                        _expandedCertificates.remove(
+                                          certificate.mact,
+                                        );
+                                      } else {
+                                        _expandedCertificates.add(
+                                          certificate.mact,
+                                        );
+                                      }
+                                    });
+
+                                    if (!isExpanded) {
+                                      await provider.loadCertificateDetails(
+                                        certificate.mact,
+                                      );
+                                    }
+                                  },
+                                  onToggleSelect: (mavt) {
+                                    setState(() {
+                                      final key = _getSelectedKey(
+                                        certificate.mact,
+                                        mavt,
+                                      );
+                                      if (_selectedEquipment.containsKey(key)) {
+                                        _selectedEquipment.remove(key);
+                                      } else {
+                                        _selectedEquipment[key] =
+                                            certificate.mact;
+                                      }
+                                    });
+                                  },
+                                  onAllocate: (mavt, tenvt) =>
+                                      _showAllocateDialog(
+                                        certificate.mact,
+                                        mavt,
+                                        tenvt,
+                                      ),
+                                  onDeallocate: (mavt, tenvt) =>
+                                      _showDeallocateDialog(
+                                        certificate.mact,
+                                        mavt,
+                                        tenvt,
+                                      ),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-
-                // Certificate list
-                Expanded(
-                  child: Consumer<CertificateProvider>(
-                    builder: (context, provider, child) {
-                      if (provider.isLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (provider.error != null) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                size: 64,
-                                color: Colors.red.shade300,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Lỗi tải dữ liệu',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              const SizedBox(height: 8),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                ),
-                                child: Text(
-                                  provider.error!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.grey.shade600),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton.icon(
-                                onPressed: _loadCertificates,
-                                icon: const Icon(Icons.refresh),
-                                label: const Text('Thử lại'),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      if (provider.certificates.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.description_outlined,
-                                size: 64,
-                                color: Colors.grey.shade400,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Không có chứng từ nào',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Thử thay đổi bộ lọc tìm kiếm',
-                                style: TextStyle(color: Colors.grey.shade600),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      return RefreshIndicator(
-                        onRefresh: () async => _loadCertificates(),
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: provider.certificates.length,
-                          itemBuilder: (context, index) {
-                            final certificate = provider.certificates[index];
-                            final isExpanded = _expandedCertificates.contains(
-                              certificate.mact,
-                            );
-
-                            return _CertificateCard(
-                              certificate: certificate,
-                              isExpanded: isExpanded,
-                              selectedEquipment: _selectedEquipment,
-                              toDate: _toDate,
-                              onToggleExpand: () async {
-                                setState(() {
-                                  if (isExpanded) {
-                                    _expandedCertificates.remove(
-                                      certificate.mact,
-                                    );
-                                  } else {
-                                    _expandedCertificates.add(certificate.mact);
-                                  }
-                                });
-
-                                if (!isExpanded) {
-                                  await provider.loadCertificateDetails(
-                                    certificate.mact,
-                                  );
-                                }
-                              },
-                              onToggleSelect: (mavt) {
-                                setState(() {
-                                  final key = _getSelectedKey(
-                                    certificate.mact,
-                                    mavt,
-                                  );
-                                  if (_selectedEquipment.containsKey(key)) {
-                                    _selectedEquipment.remove(key);
-                                  } else {
-                                    _selectedEquipment[key] = certificate.mact;
-                                  }
-                                });
-                              },
-                              onAllocate: (mavt, tenvt) => _showAllocateDialog(
-                                certificate.mact,
-                                mavt,
-                                tenvt,
-                              ),
-                              onDeallocate: (mavt, tenvt) =>
-                                  _showDeallocateDialog(
-                                    certificate.mact,
-                                    mavt,
-                                    tenvt,
-                                  ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
             ],
           );
         },
@@ -976,16 +993,10 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.blue.shade100,
-            Colors.blue.shade50,
-          ],
+          colors: [Colors.blue.shade100, Colors.blue.shade50],
         ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.blue.shade300,
-          width: 2,
-        ),
+        border: Border.all(color: Colors.blue.shade300, width: 2),
       ),
       child: Row(
         children: [
@@ -995,11 +1006,7 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
               color: Colors.blue.shade700,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(
-              Icons.person,
-              size: 20,
-              color: Colors.white,
-            ),
+            child: const Icon(Icons.person, size: 20, color: Colors.white),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -1032,11 +1039,7 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(
-              Icons.close,
-              size: 18,
-              color: Colors.red,
-            ),
+            icon: const Icon(Icons.close, size: 18, color: Colors.red),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: () {
@@ -1054,16 +1057,10 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
 
   Widget _buildDateSelector() {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 12,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.orange.shade400,
-            Colors.orange.shade600,
-          ],
+          colors: [Colors.orange.shade400, Colors.orange.shade600],
         ),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
@@ -1079,11 +1076,7 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.calendar_month,
-              size: 24,
-              color: Colors.white,
-            ),
+            const Icon(Icons.calendar_month, size: 24, color: Colors.white),
             const SizedBox(height: 6),
             Text(
               _toDate != null
