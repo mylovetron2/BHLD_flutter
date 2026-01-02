@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/equipment_categories.dart';
 import '../../../data/models/certificate_model.dart';
 import '../../providers/certificate_provider.dart';
 import '../../providers/employee_provider.dart';
@@ -668,61 +669,151 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                       Expanded(
                         child: Column(
                           children: [
-                            if (_selectedEmployee != null)
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.shade50,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.person, size: 16),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
+                            // Ngày chứng từ và Nhân viên trên 1 dòng
+                            Row(
+                              children: [
+                                // Thông tin nhân viên (bên trái)
+                                if (_selectedEmployee != null)
+                                  Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.blue.shade100,
+                                            Colors.blue.shade50,
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Colors.blue.shade300,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Row(
                                         children: [
-                                          Text(
-                                            _selectedEmployeeName ??
-                                                _selectedEmployee ??
-                                                '',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 14,
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue.shade700,
+                                              borderRadius: BorderRadius.circular(8),
                                             ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                            child: const Icon(
+                                              Icons.person,
+                                              size: 20,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                          if (_selectedEmployeeName !=
-                                              _selectedEmployee)
-                                            Text(
-                                              'Mã: $_selectedEmployee',
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: Colors.grey.shade600,
-                                              ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  _selectedEmployeeName ??
+                                                      _selectedEmployee ??
+                                                      '',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15,
+                                                    color: Colors.blue.shade900,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                                if (_selectedEmployeeName !=
+                                                    _selectedEmployee) ...[
+                                                  const SizedBox(height: 2),
+                                                  Text(
+                                                    'Mã: $_selectedEmployee',
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: Colors.blue.shade700,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
                                             ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.close,
+                                              size: 18,
+                                              color: Colors.red,
+                                            ),
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
+                                            onPressed: () {
+                                              setState(() {
+                                                _selectedEmployee = null;
+                                                _selectedEmployeeName = null;
+                                              });
+                                              _loadCertificates();
+                                            },
+                                          ),
                                         ],
                                       ),
                                     ),
-                                    IconButton(
-                                      icon: const Icon(Icons.close, size: 16),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(),
-                                      onPressed: () {
-                                        setState(() {
-                                          _selectedEmployee = null;
-                                          _selectedEmployeeName = null;
-                                        });
-                                        _loadCertificates();
-                                      },
+                                  ),
+                                if (_selectedEmployee != null)
+                                  const SizedBox(width: 12),
+                                // Ngày chứng từ (bên phải)
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 12,
                                     ),
-                                  ],
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.orange.shade400,
+                                          Colors.orange.shade600,
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.orange.shade200,
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: InkWell(
+                                      onTap: () => _selectDate(context, false),
+                                      child: Column(
+                                        children: [
+                                          const Icon(
+                                            Icons.calendar_month,
+                                            size: 24,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            _toDate != null
+                                                ? DateFormat('dd/MM/yyyy')
+                                                    .format(_toDate!)
+                                                : 'Chọn ngày',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
                             if (_selectedEmployee == null)
                               TextField(
                                 controller: _searchController,
@@ -750,59 +841,6 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                                 ),
                                 onSubmitted: (_) => _loadCertificates(),
                               ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: OutlinedButton.icon(
-                                    onPressed: () => _selectDate(context, true),
-                                    icon: const Icon(
-                                      Icons.date_range,
-                                      size: 18,
-                                    ),
-                                    label: Text(
-                                      _fromDate != null
-                                          ? DateFormat(
-                                              'dd/MM/yyyy',
-                                            ).format(_fromDate!)
-                                          : 'Từ ngày',
-                                      style: const TextStyle(fontSize: 13),
-                                    ),
-                                    style: OutlinedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: OutlinedButton.icon(
-                                    onPressed: () =>
-                                        _selectDate(context, false),
-                                    icon: const Icon(
-                                      Icons.date_range,
-                                      size: 18,
-                                    ),
-                                    label: Text(
-                                      _toDate != null
-                                          ? DateFormat(
-                                              'dd/MM/yyyy',
-                                            ).format(_toDate!)
-                                          : 'Đến ngày',
-                                      style: const TextStyle(fontSize: 13),
-                                    ),
-                                    style: OutlinedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
@@ -1036,9 +1074,7 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
 
         // Filter employees with names only
         final employeesWithName = provider.employees
-            .where(
-              (emp) => emp.tennhanvien != null && emp.tennhanvien.isNotEmpty,
-            )
+            .where((emp) => emp.tennhanvien.isNotEmpty)
             .toList();
 
         // Group employees by department
@@ -1151,13 +1187,13 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                       dept,
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 14,
+                        fontSize: 15,
                       ),
                     ),
                     subtitle: Text(
                       '${employees.length} nhân viên',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 13,
                         color: Colors.grey.shade600,
                       ),
                     ),
@@ -1167,37 +1203,101 @@ class _CertificateUnifiedScreenState extends State<CertificateUnifiedScreen> {
                           ? emp.tennhanvien
                           : 'NV ${emp.manv}';
 
-                      return ListTile(
-                        dense: true,
-                        selected: isSelected,
-                        selectedTileColor: Colors.blue.shade50,
-                        leading: Icon(
-                          Icons.person,
-                          size: 20,
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
                           color: isSelected
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey,
+                              ? Theme.of(context).primaryColor.withOpacity(0.1)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        title: Text(
-                          displayName,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.normal,
+                        child: ListTile(
+                          dense: false,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
                           ),
+                          leading: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              gradient: isSelected
+                                  ? LinearGradient(
+                                      colors: [
+                                        Theme.of(context).primaryColor,
+                                        Theme.of(context).colorScheme.secondary,
+                                      ],
+                                    )
+                                  : LinearGradient(
+                                      colors: [
+                                        Colors.grey.shade300,
+                                        Colors.grey.shade400,
+                                      ],
+                                    ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                emp.tennhanvien.isNotEmpty
+                                    ? emp.tennhanvien[0].toUpperCase()
+                                    : emp.manv.substring(0, 1),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            displayName,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.black87,
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.badge_outlined,
+                                  size: 14,
+                                  color: Colors.grey.shade600,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  emp.manv,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade700,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          trailing: isSelected
+                              ? Icon(
+                                  Icons.check_circle,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 24,
+                                )
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              _selectedEmployee = emp.manv;
+                              _selectedEmployeeName = displayName;
+                            });
+                            _loadCertificates();
+                          },
                         ),
-                        subtitle: Text(
-                          emp.manv,
-                          style: const TextStyle(fontSize: 11),
-                        ),
-                        onTap: () {
-                          setState(() {
-                            _selectedEmployee = emp.manv;
-                            _selectedEmployeeName = displayName;
-                          });
-                          _loadCertificates();
-                        },
                       );
                     }).toList(),
                   );
@@ -1270,55 +1370,22 @@ class _CertificateCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
+                        Icon(
+                          Icons.calendar_today,
+                          size: 18,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 8),
                         Text(
-                          certificate.mact,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                          DateFormat('dd/MM/yyyy').format(
+                            DateTime.parse(certificate.ngct),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.person,
-                              size: 14,
-                              color: Colors.grey.shade600,
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                '${certificate.manv} - ${certificate.tennhanvien ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey.shade700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.calendar_today,
-                              size: 14,
-                              color: Colors.grey.shade600,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              DateFormat(
-                                'dd/MM/yyyy',
-                              ).format(DateTime.parse(certificate.ngct)),
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                          ],
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -1382,66 +1449,127 @@ class _CertificateCard extends StatelessWidget {
                   final isAllocated = detail.sl == 1;
                   final key = _getSelectedKey(certificate.mact, detail.mavt);
                   final isSelected = selectedEquipment.containsKey(key);
+                  final category = EquipmentCategories.getCategory(
+                    detail.mavt,
+                    detail.tenvt,
+                  );
 
                   return Container(
                     decoration: BoxDecoration(
                       color: isSelected ? Colors.blue.shade50 : Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isSelected
-                            ? Colors.blue.shade300
+                            ? Colors.blue.shade400
                             : Colors.grey.shade200,
                         width: isSelected ? 2 : 1,
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          if (!isAllocated)
-                            Checkbox(
-                              value: isSelected,
-                              onChanged: (value) => onToggleSelect(detail.mavt),
-                            ),
-                          if (isAllocated)
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.green.shade100,
-                                borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      onTap: !isAllocated ? () => onToggleSelect(detail.mavt) : null,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            if (!isAllocated)
+                              Checkbox(
+                                value: isSelected,
+                                onChanged: (value) => onToggleSelect(detail.mavt),
                               ),
-                              child: const Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                                size: 20,
+                          // Icon vật tư theo danh mục
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: category.backgroundColor,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: category.color.withOpacity(0.3),
+                                width: 2,
                               ),
                             ),
+                            child: Icon(
+                              category.icon,
+                              color: category.color,
+                              size: 24,
+                            ),
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Tên thiết bị nổi bật
                                 Text(
                                   detail.tenvt ?? 'Thiết bị ${detail.mavt}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: category.color,
+                                    height: 1.2,
                                   ),
                                 ),
-                                Text(
-                                  'Mã: ${detail.mavt}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade600,
-                                  ),
+                                const SizedBox(height: 4),
+                                // Mã vật tư và danh mục
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        'Mã: ${detail.mavt}',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey.shade700,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Icon(
+                                      category.icon,
+                                      size: 12,
+                                      color: category.color.withOpacity(0.7),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      category.name,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: category.color.withOpacity(0.8),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 if (isAllocated) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Nhận: ${DateFormat('dd/MM/yy').format(DateTime.parse(detail.ngnhan))} - Trả: ${DateFormat('dd/MM/yy').format(DateTime.parse(detail.ngnhantt))}',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.grey.shade600,
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.shade50,
+                                      borderRadius: BorderRadius.circular(4),
+                                      border: Border.all(
+                                        color: Colors.green.shade300,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Nhận: ${DateFormat('dd/MM/yy').format(DateTime.parse(detail.ngnhan))} • Nhận tiếp theo: ${DateFormat('dd/MM/yy').format(DateTime.parse(detail.ngnhantt))}',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.green.shade800,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -1449,6 +1577,31 @@ class _CertificateCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
+                          // Status indicator
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isAllocated
+                                  ? Colors.green.shade50
+                                  : Colors.orange.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isAllocated
+                                    ? Colors.green
+                                    : Colors.orange,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Icon(
+                              isAllocated ? Icons.check_circle : Icons.schedule,
+                              color: isAllocated ? Colors.green : Colors.orange,
+                              size: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
                           if (isAllocated)
                             IconButton(
                               onPressed: () => onDeallocate(
@@ -1474,6 +1627,7 @@ class _CertificateCard extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ),
                   );
                 },
               ),

@@ -27,25 +27,48 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       body: _screens[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.description_outlined),
-            selectedIcon: Icon(Icons.description),
-            label: 'Chứng từ',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.people_outlined),
-            selectedIcon: Icon(Icons.people),
-            label: 'Nhân viên',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          height: 70,
+          backgroundColor: Colors.white,
+          indicatorColor: Theme.of(
+            context,
+          ).colorScheme.primary.withOpacity(0.15),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.description_outlined),
+              selectedIcon: Icon(
+                Icons.description,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              label: 'Chứng từ',
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.people_outlined),
+              selectedIcon: Icon(
+                Icons.people,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              label: 'Nhân viên',
+            ),
+          ],
+        ),
       ),
     );
   }

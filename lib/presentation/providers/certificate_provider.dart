@@ -9,7 +9,7 @@ class CertificateProvider with ChangeNotifier {
 
   List<CertificateModel> _certificates = [];
   CertificateModel? _selectedCertificate;
-  Map<String, List<CertificateDetailModel>> _certificateDetailsMap = {};
+  final Map<String, List<CertificateDetailModel>> _certificateDetailsMap = {};
   bool _isLoading = false;
   String? _error;
 
@@ -18,9 +18,9 @@ class CertificateProvider with ChangeNotifier {
   List<CertificateDetailModel> get certificateDetails {
     // Return all details from all certificates for backward compatibility
     final allDetails = <CertificateDetailModel>[];
-    _certificateDetailsMap.values.forEach((details) {
+    for (var details in _certificateDetailsMap.values) {
       allDetails.addAll(details);
-    });
+    }
     return allDetails;
   }
 

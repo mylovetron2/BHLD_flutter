@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/equipment_categories.dart';
 import '../../../data/models/certificate_model.dart';
 import '../../providers/certificate_provider.dart';
 
@@ -636,91 +637,189 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
                     final detail = provider.certificateDetails[index];
                     final isAllocated = detail.sl == 1;
                     final isSelected = _selectedEquipment.contains(detail.mavt);
+                    final category = EquipmentCategories.getCategory(
+                      detail.mavt,
+                      detail.tenvt,
+                    );
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       elevation: isSelected ? 4 : 1,
                       color: isSelected ? Colors.blue.shade50 : null,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                if (!isAllocated)
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 12),
-                                    child: Checkbox(
-                                      value: isSelected,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value == true) {
-                                            _selectedEquipment.add(detail.mavt);
-                                          } else {
-                                            _selectedEquipment.remove(
-                                              detail.mavt,
-                                            );
-                                          }
-                                        });
-                                      },
+                      child: InkWell(
+                        onTap: !isAllocated
+                            ? () {
+                                setState(() {
+                                  if (isSelected) {
+                                    _selectedEquipment.remove(detail.mavt);
+                                  } else {
+                                    _selectedEquipment.add(detail.mavt);
+                                  }
+                                });
+                              }
+                            : null,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  if (!isAllocated)
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 12),
+                                      child: Checkbox(
+                                        value: isSelected,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (value == true) {
+                                              _selectedEquipment.add(detail.mavt);
+                                            } else {
+                                              _selectedEquipment.remove(
+                                                detail.mavt,
+                                              );
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                // Icon vật tư theo danh mục
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: category.backgroundColor,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: category.color.withOpacity(0.3),
+                                      width: 2,
                                     ),
                                   ),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: isAllocated
-                                        ? Colors.green.shade100
-                                        : Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
                                   child: Icon(
-                                    isAllocated
-                                        ? Icons.check_circle
-                                        : Icons.inventory_2,
-                                    color: isAllocated
-                                        ? Colors.green
-                                        : Colors.grey,
+                                    category.icon,
+                                    color: category.color,
+                                    size: 32,
                                   ),
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      // Tên thiết bị nổi bật hơn
                                       Text(
                                         detail.tenvt ??
                                             'Thiết bị ${detail.mavt}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                          fontSize: 18,
+                                          color: category.color,
+                                          height: 1.2,
                                         ),
                                       ),
-                                      Text(
-                                        'Mã: ${detail.mavt}',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                          fontSize: 13,
-                                        ),
+                                      const SizedBox(height: 4),
+                                      // Mã vật tư và danh mục
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'Mã: ${detail.mavt}',
+                                              style: TextStyle(
+                                                color: Colors.grey.shade700,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: category.backgroundColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  category.icon,
+                                                  size: 14,
+                                                  color: category.color,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  category.name,
+                                                  style: TextStyle(
+                                                    color: category.color,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
-                                Chip(
-                                  label: Text(
-                                    isAllocated ? 'Đã cấp' : 'Chưa cấp',
-                                    style: TextStyle(
+                                // Status chip
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isAllocated
+                                        ? Colors.green.shade50
+                                        : Colors.orange.shade50,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
                                       color: isAllocated
                                           ? Colors.green
-                                          : Colors.grey,
-                                      fontSize: 12,
+                                          : Colors.orange,
+                                      width: 1.5,
                                     ),
                                   ),
-                                  backgroundColor: isAllocated
-                                      ? Colors.green.shade50
-                                      : Colors.grey.shade100,
-                                  side: BorderSide.none,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        isAllocated
+                                            ? Icons.check_circle
+                                            : Icons.schedule,
+                                        size: 16,
+                                        color: isAllocated
+                                            ? Colors.green
+                                            : Colors.orange,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        isAllocated ? 'Đã cấp' : 'Chưa cấp',
+                                        style: TextStyle(
+                                          color: isAllocated
+                                              ? Colors.green.shade700
+                                              : Colors.orange.shade700,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -831,7 +930,8 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
                           ],
                         ),
                       ),
-                    );
+                    ),
+                  );
                   },
                 );
               },

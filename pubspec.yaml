@@ -54,6 +54,9 @@ dependencies:
   
   # Toast Messages
   fluttertoast: ^8.2.4
+  
+  # Font Awesome Icons
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
