@@ -328,32 +328,15 @@
                     <h3 style="margin-top: 0;">Bước 4B: Xác định ngày cho chứng từ kỳ sau</h3>
                     <div class="code-block">
 <span class="comment">// 2. TẠO CHỨNG TỪ KỲ SAU</span>
-<span class="keyword">if</span>(<span class="function">isset</span>(<span class="variable">$_SESSION</span>[<span class="string">'ngaynhan'</span>]) && <span class="variable">$_SESSION</span>[<span class="string">'ngaynhan'</span>]!=<span class="string">''</span>) {
-    <span class="comment">// Nếu user nhập ngày cụ thể → Dùng ngày đó</span>
-    <span class="variable">$ngaytemp</span> = <span class="function">explode</span>(<span class="string">'/'</span>, <span class="variable">$_SESSION</span>[<span class="string">'ngaynhan'</span>]);
-    <span class="variable">$ngaynhan_future</span> = <span class="variable">$ngaytemp</span>[<span class="number">2</span>].<span class="string">'-'</span>.<span class="variable">$ngaytemp</span>[<span class="number">1</span>].<span class="string">'-'</span>.<span class="variable">$ngaytemp</span>[<span class="number">0</span>];
-} <span class="keyword">else</span> {
-    <span class="comment">// Không có session → Dùng ngày master</span>
-    <span class="variable">$ngaynhan_future</span> = <span class="variable">$rs</span>[<span class="string">'ngct'</span>];
-}
+<span class="comment">// QUAN TRỌNG: Sử dụng ngnhan, KHÔNG PHẢI ngct</span>
+<span class="variable">$ngaynhan_future</span> = <span class="variable">$rsnew</span>[<span class="string">'ngnhan'</span>];  <span class="comment">// VD: '2024-11-15'</span>
                     </div>
-                    <table>
-                        <tr>
-                            <th>Trường hợp</th>
-                            <th>$_SESSION['ngaynhan']</th>
-                            <th>$ngaynhan_future</th>
-                        </tr>
-                        <tr>
-                            <td>User nhập ngày</td>
-                            <td>'20/11/2024'</td>
-                            <td>'2024-11-20'</td>
-                        </tr>
-                        <tr>
-                            <td>Không nhập</td>
-                            <td>null hoặc ''</td>
-                            <td>'2024-11-15' (từ master)</td>
-                        </tr>
-                    </table>
+                    <div class="alert alert-warning">
+                        <strong>⚠️ LOGIC QUAN TRỌNG:</strong><br>
+                        <strong>✅ ĐÚNG:</strong> ngct kỳ sau = <code>ngnhan + dmtg</code> (ngày nhận thực tế + định mức)<br>
+                        <strong>❌ SAI:</strong> ngct kỳ sau = <code>ngct + dmtg</code> (ngày chứng từ + định mức)<br><br>
+                        <strong>Giải thích:</strong> Phải dùng <code>ngnhan</code> (ngày nhận thực tế) vì đây là ngày nhân viên thực sự nhận thiết bị, nên ngày trả kỳ sau phải tính từ ngày này.
+                    </div>
                 </div>
                 
                 <div class="flow-step">
@@ -639,21 +622,25 @@
                         <th>Biến</th>
                         <th>Công thức</th>
                         <th>Kết quả</th>
+                        <th>Ghi chú</th>
                     </tr>
                     <tr>
                         <td><strong>$ngaynhan_future</strong></td>
-                        <td>$rs['ngct'] hoặc session</td>
+                        <td>$rsnew['ngnhan'] (từ Bước 4A)</td>
                         <td>2024-11-15</td>
+                        <td><span class="badge badge-warning">Dùng ngnhan!</span></td>
                     </tr>
                     <tr>
                         <td><strong>$rsold['dmtg']</strong></td>
                         <td>Định mức thời gian</td>
                         <td>3 (tháng)</td>
+                        <td>-</td>
                     </tr>
-                    <tr>
+                    <tr style="background: #fff3cd;">
                         <td><strong>ngct kỳ sau</strong></td>
-                        <td>DATE_ADD('2024-11-15', 3 MONTH)</td>
-                        <td>2025-02-15</td>
+                        <td><strong>DATE_ADD(ngnhan, dmtg MONTH)</strong></td>
+                        <td><strong>2025-02-15</strong></td>
+                        <td><span class="badge badge-success">KHÔNG dùng ngct!</span></td>
                     </tr>
                     <tr>
                         <td><strong>Năm-tháng</strong></td>
@@ -698,27 +685,27 @@
                     </div>
                 </div>
                 
-                <h3>2. Session ngaynhan có giá trị vs không có giá trị:</h3>
-                <table>
-                    <tr>
-                        <th>Tình huống</th>
-                        <th>$_SESSION['ngaynhan']</th>
-                        <th>$ngaynhan_future</th>
-                        <th>ngct kỳ sau</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Có session</strong></td>
-                        <td>'20/11/2024'</td>
-                        <td>'2024-11-20'</td>
-                        <td>'2025-02-20' (20/11 + 3 tháng)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Không có session</strong></td>
-                        <td>null hoặc ''</td>
-                        <td>'2024-11-15' (từ master)</td>
-                        <td>'2025-02-15' (15/11 + 3 tháng)</td>
-                    </tr>
-                </table>
+                <h3>2. Logic tính ngày kỳ sau - QUAN TRỌNG:</h3>
+                <div class="comparison">
+                    <div class="comparison-item before">
+                        <h4>❌ Logic SAI</h4>
+                        <div class="code-block">
+<span class="comment">// SAI: Dùng ngct (ngày chứng từ)</span>
+<span class="variable">ngct_kỳ_sau</span> = <span class="function">DATE_ADD</span>(<span class="variable">ngct</span>, <span class="keyword">INTERVAL</span> <span class="variable">dmtg</span> <span class="keyword">MONTH</span>)
+                        </div>
+                        <p>❌ Nếu nhân viên nhận muộn hơn ngct → Kỳ sau sai!</p>
+                    </div>
+                    
+                    <div class="comparison-item after">
+                        <h4>✅ Logic ĐÚNG</h4>
+                        <div class="code-block">
+<span class="comment">// ĐÚNG: Dùng ngnhan (ngày nhận thực tế)</span>
+<span class="variable">ngct_kỳ_sau</span> = <span class="function">DATE_ADD</span>(<span class="variable">ngnhan</span>, <span class="keyword">INTERVAL</span> <span class="variable">dmtg</span> <span class="keyword">MONTH</span>)
+                        </div>
+                        <p>✅ Luôn tính từ ngày nhận thực tế → Chính xác!</p>
+                        <p><strong>Ví dụ:</strong> ngnhan='2024-11-15', dmtg=3 → '2025-02-15'</p>
+                    </div>
+                </div>
                 
                 <h3>3. Chứng từ kỳ sau đã tồn tại:</h3>
                 <div class="alert alert-info">
@@ -768,9 +755,10 @@
                     <ol style="margin: 15px 0 0 30px;">
                         <li><strong>Tự động hóa:</strong> Khi nhân viên nhận thiết bị (sl: 0→1), hệ thống tự động tạo chứng từ cho kỳ trả</li>
                         <li><strong>Cấu trúc 2 tầng:</strong> Tạo cả master (bhld_ctu) và detail (bhld_ctctu)</li>
-                        <li><strong>Tính toán ngày:</strong> Ngày kỳ sau = Ngày hiện tại + Định mức thời gian</li>
+                        <li style="background: #fff3cd; padding: 5px; border-radius: 5px;"><strong>⚠️ CÔNG THỨC QUAN TRỌNG:</strong> <code>ngct kỳ sau = ngnhan + dmtg</code><br>
+                            → Phải dùng <strong>ngnhan</strong> (ngày nhận thực tế), KHÔNG dùng ngct (ngày chứng từ)</li>
                         <li><strong>Trạng thái ban đầu:</strong> sl=0, ngnhan='1911-11-11' (chưa nhận)</li>
-                        <li><strong>Linh hoạt:</strong> Có thể dùng ngày từ session hoặc master</li>
+                        <li><strong>Đơn giản:</strong> Sử dụng ngnhan từ record hiện tại đã được cập nhật ở Bước 4A</li>
                         <li><strong>An toàn:</strong> Dùng INSERT IGNORE để tránh duplicate</li>
                     </ol>
                 </div>
@@ -778,8 +766,9 @@
                 <div class="alert alert-warning">
                     <h3 style="margin-top: 0;">⚠️ Lưu ý khi maintain:</h3>
                     <ul style="margin: 15px 0 0 30px;">
+                        <li><strong style="color: #d9534f;">QUAN TRỌNG NHẤT:</strong> Luôn dùng công thức <code>ngct kỳ sau = ngnhan + dmtg</code>, KHÔNG dùng <code>ngct + dmtg</code></li>
                         <li>Đảm bảo logic LPAD() xử lý đúng mã có/không có ký tự đặc biệt</li>
-                        <li>Kiểm tra session 'ngaynhan' có được set từ form hay không</li>
+                        <li>Đảm bảo ngnhan được cập nhật chính xác ở Bước 4A trước khi tính kỳ sau</li>
                         <li>Verify định mức thời gian (dmtg) đúng với từng loại vật tư</li>
                         <li>Test với nhiều trường hợp: manv số thuần, manv có ký tự, dmtg khác nhau</li>
                         <li>Log SQL query nếu INSERT fail để debug</li>

@@ -1,0 +1,112 @@
+<?php
+require_once 'config.php';
+
+$method = $_SERVER['REQUEST_METHOD'];
+
+try {
+    if ($method === 'GET') {
+        // Get single certificate by mact
+        if (isset($_GET['mact'])) {
+            $mact = mysqli_real_escape_string($conn, $_GET['mact']);
+            
+            $sql = "SELECT 
+                        ct.mact,
+                        ct.ngct,
+                        ct.mapb,
+                        ct.manv,
+                        ct.ghichu,
+                        ct.madm,
+                        nv.tennhanvien,
+                        pb.tenphong as tenphongban
+                    FROM bhld_ctu ct
+                    LEFT JOIN bhld_nhanvien nv ON ct.manv = nv.manv
+                    LEFT JOIN bhld_phongban pb ON ct.mapb = pb.mapb
+                    WHERE ct.mact = '$mact'
+                    LIMIT 1";
+            
+            $result = mysqli_query($conn, $sql);
+            
+            if ($result && mysqli_num_rows($result) > 0) {
+                $certificate = mysqli_fetch_assoc($result);
+                sendSuccess($certificate, 'Lấy thông tin chứng từ thành công');
+            } else {
+                sendError('Không tìm thấy chứng từ', 404);
+            }
+        }
+        // Get list of certificates with filters
+        else {
+            $manv = isset($_GET['manv']) ? mysqli_real_escape_string($conn, $_GET['manv']) : '';
+            $from_date = isset($_GET['from_date']) ? mysqli_real_escape_string($conn, $_GET['from_date']) : '';
+            $to_date = isset($_GET['to_date']) ? mysqli_real_escape_string($conn, $_GET['to_date']) : '';
+            
+            $sql = "SELECT 
+                        ct.mact,
+                        ct.ngct,
+                        ct.mapb,
+                        ct.manv,
+                        ct.ghichu,
+                        ct.madm,
+                        nv.tennhanvien,
+                        pb.tenphong as tenphongban
+                    FROM bhld_ctu ct
+                    LEFT JOIN bhld_nhanvien nv ON ct.manv = nv.manv
+                    LEFT JOIN bhld_phongban pb ON ct.mapb = pb.mapb
+                    WHERE 1=1";
+            
+            if (!empty($manv)) {
+                $sql .= " AND ct.manv = '$manv'";
+            }
+            if (!empty($from_date)) {
+                $sql .= " AND ct.ngct >= '$from_date'";
+            }
+            if (!empty($to_date)) {
+                $sql .= " AND ct.ngct <= '$to_date'";
+            }
+            
+            $sql .= " ORDER BY ct.ngct DESC LIMIT 100";
+            
+            $result = mysqli_query($conn, $sql);
+            $certificates = [];
+            
+            if ($result) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $certificates[] = $row;
+                }
+            }
+            
+            sendSuccess($certificates, 'Lấy danh sách chứng từ thành công');
+        }
+    } 
+    else if ($method === 'POST') {
+        // Create new certificate
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        if (!isset($data['mact']) || !isset($data['manv']) || !isset($data['ngct']) || !isset($data['mapb']) || !isset($data['madm'])) {
+            sendError('Thiếu thông tin bắt buộc');
+        }
+        
+        $mact = mysqli_real_escape_string($conn, $data['mact']);
+        $manv = mysqli_real_escape_string($conn, $data['manv']);
+        $ngct = mysqli_real_escape_string($conn, $data['ngct']);
+        $mapb = mysqli_real_escape_string($conn, $data['mapb']);
+        $madm = mysqli_real_escape_string($conn, $data['madm']);
+        $ghichu = isset($data['ghichu']) ? mysqli_real_escape_string($conn, $data['ghichu']) : '';
+        
+        $sql = "INSERT INTO bhld_ctu (mact, manv, ngct, mapb, madm, ghichu) 
+                VALUES ('$mact', '$manv', '$ngct', '$mapb', '$madm', '$ghichu')";
+        
+        if (mysqli_query($conn, $sql)) {
+            sendSuccess(['mact' => $mact], 'Tạo chứng từ thành công');
+        } else {
+            sendError('Lỗi tạo chứng từ: ' . mysqli_error($conn));
+        }
+    }
+    else {
+        sendError('Method không được hỗ trợ', 405);
+    }
+} catch (Exception $e) {
+    sendError('Lỗi server: ' . $e->getMessage(), 500);
+}
+
+mysqli_close($conn);
+?>
