@@ -68,6 +68,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  
+  # MSIX package for creating Windows installer
+  msix: ^3.16.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -109,5 +112,15 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
+
+# MSIX Configuration for Windows Installer
+msix_config:
+  display_name: BHLD Mobile App
+  publisher_display_name: MyLoveTron2
+  identity_name: com.mylovetron2.bhld
+  msix_version: 1.0.0.0
+  logo_path: logo.jpg
+  capabilities: internetClient
+  languages: vi-VN, en-US
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
