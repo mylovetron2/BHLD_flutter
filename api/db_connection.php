@@ -10,10 +10,10 @@
 // Thay đổi các thông số sau cho phù hợp với server
 $db_config = [
     'host'     => 'diavatly.com',        // Thường là localhost
-    'username' => 'localhost',             // Username MySQL của bạn
-    'password' => 'cntt2019',                 // Password MySQL của bạn
-    'database' => 'diavatly_ltd',    // Tên database BHLD
-    'charset'  => 'utf8mb4',          // Charset hỗ trợ tiếng Việt
+    'username' => 'diavatly_cntt',        // Username MySQL của bạn
+    'password' => 'cntt2019',             // Password MySQL của bạn
+    'database' => 'diavatly_ltd',         // Tên database BHLD
+    'charset'  => 'utf8mb4',              // Charset hỗ trợ tiếng Việt
 ];
 
 // ===== KẾT NỐI MYSQL =====

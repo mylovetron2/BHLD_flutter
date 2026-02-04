@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../certificate/certificate_unified_screen.dart';
 import '../employee/employee_list_screen.dart';
+import '../report/monthly_report_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const CertificateUnifiedScreen(),
     const EmployeeListScreen(),
+    const MonthlyReportScreen(),
   ];
 
   @override
@@ -66,6 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Theme.of(context).colorScheme.primary,
               ),
               label: 'Nhân viên',
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.assessment_outlined),
+              selectedIcon: Icon(
+                Icons.assessment,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              label: 'Báo cáo',
             ),
           ],
         ),

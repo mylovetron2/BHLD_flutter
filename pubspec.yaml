@@ -57,6 +57,12 @@ dependencies:
   
   # Font Awesome Icons
   font_awesome_flutter: ^10.7.0
+  
+  # PDF Generation & Export
+  pdf: ^3.10.7
+  printing: ^5.11.1
+  path_provider: ^2.1.1
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:

@@ -10,6 +10,7 @@ class ApiConstants {
   static const String allocate = '/allocate_new.php';
   static const String deallocate = '/deallocate_v2.php';
   static const String allocationHistory = '/allocation_history.php';
+  static const String monthlyReport = '/monthly_report.php';
 
   // Headers
   static Map<String, String> get headers => {

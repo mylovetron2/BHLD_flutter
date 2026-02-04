@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'presentation/providers/allocation_provider.dart';
 import 'presentation/providers/certificate_provider.dart';
 import 'presentation/providers/employee_provider.dart';
+import 'presentation/providers/monthly_report_provider.dart';
 import 'presentation/screens/home/home_screen.dart';
 
 void main() {
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EmployeeProvider()),
         ChangeNotifierProvider(create: (_) => CertificateProvider()),
         ChangeNotifierProvider(create: (_) => AllocationProvider()),
+        ChangeNotifierProvider(create: (_) => MonthlyReportProvider()),
       ],
       child: MaterialApp(
         title: 'BHLD Mobile',
